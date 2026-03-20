@@ -1,0 +1,88 @@
+<h4 class="py-3 mb-4"><span class="text-muted fw-light">Menu /</span> Asignacion de Techo Presupuesario</h4>
+
+<div id="tablaRegistro"></div>
+
+<div class="modal fade" id="modalFormularioFormulario" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" id="contenidoModalFormulario"></div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    cargarTabla();
+
+  });
+
+  function cargarFormulario() {
+    $.ajax({
+      type: 'POST',
+      url: "/techoPresupuestario/formulario",  // Ruta del metodo del controlador en Spring Boot
+      success: function (response) {
+        $("#contenidoModalFormulario").html(response);  // Actualiza el contenido del div con la respuesta del servidor
+        $('.select2').select2({
+          dropdownParent: $('#formularioPresupuesto')  // Especificar el parent para el dropdown
+        });
+      }
+    });
+  }
+
+  function cargarFormularioEdit(id) {
+    $.ajax({
+      type: 'POST',
+      url: "/techoPresupuestario/formulario/" + id,  // Ruta del metodo del controlador en Spring Boot
+      success: function (response) {
+        $("#contenidoModalFormulario").html(response);  // Actualiza el contenido del div con la respuesta del servidor
+        $('.select2').select2({
+          dropdownParent: $('#formularioPresupuesto')  // Especificar el parent para el dropdown
+        });
+      }
+    });
+  }
+
+  function cargarTabla() {
+    $.ajax({
+      type: 'POST',
+      url: "/techoPresupuestario/tablaRegistros",  // Ruta del metodo del controlador en Spring Boot
+      success: function (response) {
+        $("#tablaRegistro").html(response);  // Actualiza el contenido del div con la respuesta del servidor
+      }
+    });
+  }
+
+  function eliminar(persona) {
+    Swal.fire({
+      title: 'Eliminar Registro',
+      text: '¿Estas seguro de eliminar este registro?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Si el usuario confirma, realizar la llamada AJAX
+        $.ajax({
+          url: '/techoPresupuestario/eliminar/'+persona, // Cambia esto por la URL de tu script PHP
+          type: 'POST',
+          success: function (response) {
+            cargarTabla();
+            Swal.fire(
+              'Eliminado!',
+              response,
+              'success'
+            );
+            // Puedes agregar aquí código para actualizar la interfaz de usuario
+          },
+          error: function (xhr, status, error) {
+            Swal.fire(
+              'Error',
+              'Hubo un problema al eliminar el registro. Por favor, inténtalo de nuevo.',
+              'error'
+            );
+          }
+        });
+      } 
+    });
+  }
+</script>

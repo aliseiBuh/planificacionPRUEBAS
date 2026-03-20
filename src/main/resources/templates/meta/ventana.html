@@ -1,0 +1,96 @@
+<h4 class="py-3 mb-4"><span class="text-muted fw-light">Menu /</span> Metas y Responsables</h4>
+
+<div id="tablaRegistro"></div>
+
+<div class="modal fade" id="modalFormularioMetas" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content" id="contenidoModalForm"></div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    cargarTabla();
+
+  });
+
+  function cargarFormulario() {
+    cargarFormularioAlert("/meta/formularioMetaAnual", "#contenidoModalForm", "#formularioMeta");
+
+
+  }
+
+  function cargarFormularioEdit(id) {
+    cargarFormularioEditAlert(id, "/meta/formularioMetaAnual", "#contenidoModalForm", "#formularioMeta");
+  }
+
+  function eliminarMeta(meta, idIndicador) {
+    Swal.fire({
+      title: 'Eliminar Registro',
+      text: '¿Estas seguro de eliminar este registro?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Si el usuario confirma, realizar la llamada AJAX
+        $.ajax({
+          url: '/meta/eliminar/' + meta, // Cambia esto por la URL de tu script PHP
+          type: 'POST',
+          success: function (response) {
+            cargarFormularioMetasAnuales(idIndicador);
+            cargarTabla();
+            Swal.fire(
+              'Eliminado!',
+              response,
+              'success'
+            );
+            // Puedes agregar aquí código para actualizar la interfaz de usuario
+          },
+          error: function (xhr, status, error) {
+            Swal.fire(
+              'Error',
+              'Hubo un problema al eliminar el registro. Por favor, inténtalo de nuevo.',
+              'error'
+            );
+          }
+        });
+      }
+    });
+  }
+
+  function cargarFormularioLineaBase(id) {
+    cargarFormularioEditAlert(id, "/meta/formularioLineaBase", "#contenidoModalForm", "#formularioIndicador");
+  }
+
+  function cargarFormularioEditTotal(id) {
+    cargarFormularioEditAlert(id, "/meta/formularioTotalEdit", "#contenidoModalForm", "#formularioIndicadorTotal");
+  }
+
+  function cargarFormularioMetasAnuales(id) {
+    cargarFormularioEditAlert(id, "/meta/formularioMetaAnual", "#contenidoModalForm", "#formularioMeta");
+  }
+
+  function cargarFormularioMetasAnualesEdit(id) {
+    cargarFormularioEditAlert(id, "/meta/formularioMetaAnualEdit", "#contenidoModalForm", "#formularioMeta");
+  }
+
+  function cargarFormularioResponsable(id) {
+    cargarFormularioEditAlert(id, "/meta/formularioResponsable", "#contenidoModalForm", "#formularioResponsable");
+  }
+
+  function cargarTabla() {
+    $.ajax({
+      type: 'POST',
+      url: "/meta/tablaRegistros",  // Ruta del metodo del controlador en Spring Boot
+      success: function (response) {
+        $("#tablaRegistro").html(response);  // Actualiza el contenido del div con la respuesta del servidor
+      console.log("-------------------------------------------------------------------ID capturado:", idIndicador);
+   
+   
+      }
+    });
+  }
+</script>

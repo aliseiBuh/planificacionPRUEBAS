@@ -1,0 +1,278 @@
+<div class="modal-header">
+  <h4 class="modal-title" th:text="${edit}? 'Modificar Avance' : 'Registrar Avance'"></h4>
+  <a type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></a>
+</div>
+<form id="formularioAvances" method="post" th:action="${edit}? @{/avance/Modificar} : @{/avance/Registrar}"
+  enctype="multipart/form-data" novalidate>
+  <div class="modal-body">
+    <input type="hidden" th:if="${edit != null}" th:field="${avance.idAvance}">
+    <div class="row">
+      <div class="col-12 col-md-6">
+        <label for="select2Basic" class="form-label">Indicador</label>
+        <select class="select2 form-select form-select-lg" id="selectIndicador" data-allow-clear="true"
+          onchange="elegirIndicador(this.value)" name="idIndicador" required>
+          <option value="">Seleccione una opción</option>
+          <option th:each="indicador : ${indicadores}" th:value="${indicador.idIndicador}"
+            th:selected="${avance.meta != null && indicador == avance.meta.indicador}"
+            th:text="${indicador.denominacion}">
+          </option>
+        </select>
+        <div class="valid-feedback">Correcto!</div>
+        <div class="invalid-feedback">Debe seleccionar un indicador.</div>
+      </div>
+      <div class="col-12 col-md-6">
+        <label for="select2Basic" class="form-label">Meta</label>
+        <select class="select2 form-select form-select-lg" th:field="${avance.meta}" name="idMeta"
+          data-allow-clear="true" id="selectMeta" onchange="elegirMeta()" required>
+          <option value="">Seleccione una opción</option>
+          <option th:each="meta : ${metas}" th:value="${meta.idMeta}" th:selected="${meta == avance.meta}"
+            th:text="${meta.gestion}" th:if="${edit != null}">
+          </option>
+        </select>
+        <div class="valid-feedback">Correcto!</div>
+        <div class="invalid-feedback">Debe seleccionar una Meta.</div>
+      </div>
+    </div>
+    <div id="inputs" th:if="${edit == null}"></div>
+    <div class="row" id="inputs" th:if="${edit != null}">
+      <div class="col-12 col-md-6">
+        <label class="form-label" for="modalEditUserFirstName">Programado</label>
+        <input type="number" class="form-control" placeholder="valor" min="0" th:value="${avance.meta.resultado}"
+          th:if="${avance.meta.indicador.tipoCalculo.nombre == 'Entero' || avance.meta.indicador.tipoCalculo.nombre == 'Promedio'}"
+          disabled />
+        <input type="text" class="form-control" placeholder="valor" min="0" th:value="${avance.meta.resultadoDecimal}"
+          th:field="${avance.ejecutadoDecimal}" th:if="${avance.meta.indicador.tipoCalculo.nombre == 'Porcentaje'}"
+          required />
+        <div class="valid-feedback">Correcto!</div>
+        <div class="invalid-feedback">Porfavor Introduzca el valor programado</div>
+      </div>
+      <div class="col-12 col-md-6">
+        <label class="form-label" for="modalEditUserFirstName">Ejecutado</label>
+        <input type="number" class="form-control" placeholder="valor" min="0" name="valorAvance"
+          th:value="${avance.ejecutado}"
+          th:if="${avance.meta.indicador.tipoCalculo.nombre == 'Entero' || avance.meta.indicador.tipoCalculo.nombre == 'Promedio'}"
+          required />
+        <input type="text" class="form-control decimal-mask" placeholder="valor" name="valorAvance"
+          th:value="${avance.ejecutadoDecimal}" th:if="${avance.meta.indicador.tipoCalculo.nombre == 'Porcentaje'}"
+          required />
+        <div class="valid-feedback">Correcto!</div>
+        <div class="invalid-feedback">Porfavor Introduzca el valor ejecutado</div>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-12 col-md-12">
+        <label class="form-label" for="modalEditUserFirstName">Evaluación Cualitativa</label>
+        <textarea class="form-control" th:field="${avance.evaluacionCualitativa}" placeholder="Introduzca Evaluación Cualitativa" required></textarea>
+        <div class="valid-feedback">Correcto!</div>
+        <div class="invalid-feedback">Porfavor Introduzca un texto</div>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <label for="">Medios de Verifiación</label>
+      <input type="file" class="filepond" name="filepond" multiple data-allow-reorder="true" data-max-file-size="100MB"
+        data-max-files="5" accept="image/*, application/pdf">
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="row">
+      <div class="col-12">
+        <input type="submit" class="btn btn-success" th:value="${edit}? 'Guardar Cambios': 'Guardar Registro'">
+        <a type="button" class="btn btn-secondary" style="color: white;" data-bs-dismiss="modal">Cancelar</a>
+      </div>
+    </div>
+  </div>
+</form>
+
+<!-- <script th:if="${edit == null}">
+  $('#selectMeta').empty();
+  $('#selectIndicador').empty();
+</script> -->
+<script>
+  $(document).ready(function () {
+    const fileInput = document.querySelector('.filepond');
+
+    // Registrar los plugins que usarás
+    FilePond.registerPlugin(
+      FilePondPluginImagePreview,
+      FilePondPluginImageExifOrientation,
+      FilePondPluginFileValidateSize,
+      FilePondPluginImageEdit
+    );
+
+    if (fileInput._pond) {
+      // Si ya está creado, destruir la instancia anterior
+      fileInput._pond.destroy();
+      console.log("FilePond destruido.");
+    }
+
+    // Crear una nueva instancia de FilePond
+    const pond = FilePond.create(fileInput, {
+      labelIdle: 'Arrastra y suelta tus archivos o <span class="filepond--label-action">haz clic aquí</span> para seleccionarlos',
+      acceptedFileTypes: ['image/*', 'application/pdf'],  // Solo imágenes y PDFs
+      allowFileTypeValidation: true,  // Validar tipos de archivos
+      maxFileSize: '100MB',  // Límite de tamaño de archivo
+      maxFiles: 5,  // Número máximo de archivos
+      checkValidity: true,  // Validar los archivos antes de enviar el formulario
+    });
+
+    // Función que elimina archivos no válidos después de que se agregan a FilePond
+    pond.on('updatefiles', function (files) {
+      files.forEach(function (file) {
+        const fileType = file.fileType;
+
+        // Si el archivo no es imagen ni PDF, eliminarlo
+        if (!fileType.match(/^image\//) && fileType !== 'application/pdf') {
+          pond.removeFile(file.id);  // Eliminar archivo no válido
+          //console.log('Archivo eliminado (no válido):', file.file.name);
+          const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.onmouseenter = Swal.stopTimer;
+              toast.onmouseleave = Swal.resumeTimer;
+            }
+          });
+          Toast.fire({
+            icon: "info",
+            title: "Solo de Admiten archivos de tipo PDF y de Imagen"
+          });
+        }
+      });
+    });
+
+    // Manejar el envío del formulario con jQuery
+    $('#formularioAvances').on('submit', function (e) {
+      e.preventDefault(); // Evitar el envío tradicional del formulario
+
+      if (this.checkValidity() === false) {
+        $(this).addClass('was-validated');
+        return;
+      }
+
+      const formData = new FormData(this); // Crear un objeto FormData a partir del formulario
+
+      const files = pond.getFiles();  // Obtener todos los archivos seleccionados en FilePond
+      // Variable de validación
+
+      // Recorrer los archivos y validar que todos sean imágenes o PDFs
+      files.forEach(function (file) {
+        // Agregar cada archivo a FormData
+        formData.append('filepond', file.file); // 'filepond' es el nombre del campo de archivo
+      });
+
+      // Enviar los datos con jQuery y AJAX
+      $.ajax({
+        url: '/avance/Registrar',  // URL de tu controlador en Spring
+        type: 'POST',
+        data: formData,
+        processData: false,  // Importante para que jQuery no procese el FormData
+        contentType: false,  // No especificar el tipo de contenido, ya que lo maneja FormData
+        success: function (response) {
+          Swal.fire(
+            'Registrado!',
+            response,
+            'success'
+          );
+          cargarFormulario();
+          cargarTabla();
+        },
+        error: function (xhr, status, error) {
+          console.error('Error:', error);
+          alert('Hubo un error al enviar el formulario.');
+        }
+      });
+    });
+  });
+
+</script>
+
+<script>
+  $(document).ready(function () {
+    //manejarEnvioFormulario('#formularioAvances');
+    $('.select2').select2({
+      dropdownParent: $('#formularioAvances'),
+      placeholder: "Seleccione una opcion...",
+      allowClear: true
+    });
+
+  });
+
+  function elegirIndicador(indicador) {
+
+    var selectElement = $('#selectMeta');
+    selectElement.empty();
+
+    if (selectElement.val() == 0) {
+      return;
+    }
+
+
+    $.ajax({
+      type: 'POST',
+      url: "/avance/detallesIndicador/" + indicador,
+      success: function (data) {
+        //console.log(data);
+        data.forEach(function (fila) {
+          var option = document.createElement('option');
+          option.value = fila[0];
+          option.text = fila[1];
+          //option.selected = true;
+          selectElement.append(option);
+        });
+        elegirMeta();
+      }
+    });
+  }
+
+  function elegirMeta() {
+
+    const meta = $('#selectMeta').val();
+
+    $.ajax({
+      type: 'POST',
+      url: "/avance/detallesMeta/" + meta,
+      success: function (data) {
+        console.log(data[0]);
+        if (data[0] == 'Porcentaje') {
+          $("#inputs").html(`
+            <div class="row animate__animated animate__fadeInUp">
+              <div class="col-12 col-md-6">
+                <label class="form-label" for="modalEditUserFirstName">Programado</label>
+                <input type="text" class="form-control decimal-mask" placeholder="valor" value="${data[1]}" disabled />        
+                <div class="valid-feedback">Correcto!</div>
+                <div class="invalid-feedback">Porfavor Introduzca el valor ejecutado</div>
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label" for="modalEditUserFirstName">Ejecutado</label>
+                <input type="text" class="form-control decimal-mask" placeholder="valor" name="valorAvance" required />        
+                <div class="valid-feedback">Correcto!</div>
+                <div class="invalid-feedback">Porfavor Introduzca el valor ejecutado</div>
+              </div>
+            </div>
+            `);
+        }
+        if (data[0] == 'Entero' || data[0] == 'Promedio') {
+          $("#inputs").html(`
+            <div class="row animate__animated animate__fadeInUp">
+              <div class="col-12 col-md-6">
+                <label class="form-label" for="modalEditUserFirstName">Programado</label>
+                <input type="number" class="form-control" placeholder="valor" min="0" value="${data[1]}" disabled />
+                <div class="valid-feedback">Correcto!</div>
+                <div class="invalid-feedback">Porfavor Introduzca el valor ejecutado</div>
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label" for="modalEditUserFirstName">Ejecutado</label>
+                <input type="number" class="form-control" placeholder="valor" min="0" name="valorAvance" required />
+                <div class="valid-feedback">Correcto!</div>
+                <div class="invalid-feedback">Porfavor Introduzca el valor ejecutado</div>
+              </div>
+            </div>
+            `);
+        }
+      }
+    });
+  }
+</script>

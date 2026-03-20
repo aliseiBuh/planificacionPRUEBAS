@@ -1,0 +1,124 @@
+<div class="card " id="tablaRegistro">
+  <div class="card-header d-flex justify-content-lg-between">
+
+    <h5>Registros Metas y Responsables</h5>
+    <!-- <button type="button" class="btn btn-primary" onclick="cargarFormulario()" data-bs-toggle="modal"
+      data-bs-target="#modalFormularioPersona">
+      <i class="fa-solid fa-plus"></i> Agregar Metas
+    </button> -->
+  </div>
+  <div class="card-datatable table-responsive pt-0">
+    <table class="datatables-basic table table-hover table-bordered" id="data-table">
+      <thead >
+        <tr>
+          <th>Indicador</th>
+          <th>Resultado Esperado</th>
+          <th>Linea Base</th>
+          <th>Metas Anuales</th>
+          <th>Total</th>
+          <th>Responsables</th>
+          <th th:if="${#lists.contains(session.roles.![nombre], 'ADMINISTRADOR')}">Opciones</th>
+        </tr>
+      </thead>
+      <tbody class="animate__animated animate__fadeIn">
+        <tr th:each="resultado, cont: ${listaRegistros}" th:if="${resultado.estado != 'ELIMINADO'}">
+          <th>
+            <b th:text="'COD IE '+${resultado.indicador.codigo}+': '"></b>
+            "<span th:text="${resultado.indicador.denominacion}"></span>"
+          </th>
+          <th>
+            <b th:text="'COD RE '+${resultado.codigo}+': '"></b>
+            "<span th:text="${resultado.denominacion}"></span>"
+          </th>
+          <th >
+            <span th:text="${resultado.indicador.lineaBase}+' %'" th:if="${resultado.indicador.tipoCalculo.nombre == 'Porcentaje'}"></span>
+            <span th:text="${resultado.indicador.lineaBase}" th:if="${resultado.indicador.tipoCalculo.nombre == 'Entero' || resultado.indicador.tipoCalculo.nombre == 'Promedio'}"></span>
+          </th>
+          <th>
+            <ul class="list-group" style="width: 210px;">
+              <li class="list-group-item d-flex justify-content-between align-items-center"
+                th:each="meta: ${resultado.indicador.getMetasOrdenadas()}" 
+                th:if="${meta.estado != 'ELIMINADO'}">
+                <th:block th:text="'Gestión: '+${meta.gestion}"></th:block>
+                <span class="badge text-bg-primary rounded-pill" th:text="${meta.resultado}" th:if="${resultado.indicador.tipoCalculo.nombre == 'Entero' || resultado.indicador.tipoCalculo.nombre == 'Promedio'}"></span>
+                <span class="badge text-bg-primary rounded-pill" th:text="${meta.resultadoDecimal}" th:if="${resultado.indicador.tipoCalculo.nombre == 'Porcentaje'}"></span>
+              </li>
+            </ul>
+          </th>
+          <th>
+            <span class="badge text-bg-primary rounded-pill" th:text="${resultado.indicador.totalDecimal}+' %'" th:if="${resultado.indicador.tipoCalculo.nombre == 'Porcentaje'}"></span>
+            <span class="badge text-bg-primary rounded-pill" th:text="${resultado.indicador.total}" th:if="${resultado.indicador.tipoCalculo.nombre == 'Entero' || resultado.indicador.tipoCalculo.nombre == 'Promedio'}"></span>
+          </th>
+          <th>
+            <ul class="list-group" style="width: 210px;">
+              <li class="list-group-item d-flex justify-content-between align-items-center"
+                th:each="unidad: ${resultado.indicador.responsables}" 
+                th:if="${unidad.estado != 'ELIMINADO'}">
+                <th:block th:text="${unidad.nombre}"></th:block>
+              </li>
+            </ul>
+            <!-- <span th:text="${resultado.indicador.unidadFuncional.nombre}"
+              th:if="${resultado.indicador.unidadFuncional != null}"></span> -->
+          </th>
+          <th th:if="${#lists.contains(session.roles.![nombre], 'ADMINISTRADOR')}">
+            <button type="button" class="btn btn-primary btn-icon rounded-pill" data-bs-tooltip="tooltip"
+              data-bs-placement="top" th:onclick="cargarFormularioLineaBase([[${resultado.indicador.idIndicador}]])" data-bs-toggle="modal"
+              data-bs-target="#modalFormularioMetas" data-bs-custom-class="tooltip-primary" title="Linea Base">
+              <i class="fa-solid fa-code-branch"></i>
+            </button>
+            <button type="button" class="btn btn-primary btn-icon rounded-pill" data-bs-tooltip="tooltip"
+              data-bs-placement="top" th:onclick="cargarFormularioMetasAnuales([[${resultado.indicador.idIndicador}]])"
+              data-bs-custom-class="tooltip-primary" title="Metas Anuales" data-bs-toggle="modal"
+              data-bs-target="#modalFormularioMetas">
+              <i class="fa-solid fa-layer-group"></i>
+            </button>
+            <button type="button" class="btn btn-primary btn-icon rounded-pill" data-bs-tooltip="tooltip"
+            data-bs-placement="top" th:onclick="cargarFormularioEditTotal([[${resultado.indicador.idIndicador}]])"
+            data-bs-custom-class="tooltip-primary" title="Total" data-bs-toggle="modal"
+            data-bs-target="#modalFormularioMetas">
+            <i class="fa-solid fa-square-poll-vertical"></i>
+          </button>
+            <button type="button" class="btn btn-primary btn-icon rounded-pill" data-bs-tooltip="tooltip"
+              data-bs-placement="top" th:onclick="cargarFormularioResponsable([[${resultado.indicador.idIndicador}]])"
+              data-bs-custom-class="tooltip-primary" title="Responsables" data-bs-toggle="modal"
+              data-bs-target="#modalFormularioMetas">
+              <i class="fa-solid fa-users-rectangle"></i>
+            </button>
+          </th>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+    // Inicializar los tooltips
+    $('[data-bs-tooltip="tooltip"]').tooltip();
+  });
+  $('#data-table').DataTable({
+    language: {
+      "sProcessing": "Procesando...",
+      "sLengthMenu": "Mostrar _MENU_ registros",
+      "sZeroRecords": "No se encontraron resultados",
+      "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+      "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+      "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+      "sInfoPostFix": "",
+      "sSearch": "Buscar:",
+      "sUrl": "",
+      "sInfoThousands": ",",
+      "sLoadingRecords": "Cargando...",
+      "oPaginate": {
+        "sFirst": "Primero",
+        "sLast": "Último",
+        "sNext": "Siguiente",
+        "sPrevious": "Anterior"
+      },
+      "oAria": {
+        "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+        "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+      }
+    }
+  });
+</script>

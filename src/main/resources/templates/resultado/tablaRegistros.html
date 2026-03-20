@@ -1,0 +1,75 @@
+<div class="card ">
+    <div class="card-header d-flex justify-content-lg-between">
+        <h5>Registro de Resultados</h5>
+        <button th:if="${#lists.contains(session.roles.![nombre], 'ADMINISTRADOR')}" type="button" class="btn btn-primary" onclick="cargarFormulario()" data-bs-toggle="modal"
+            data-bs-target="#modalFormularioResultado">
+            <i class="fa-solid fa-user-plus"></i> Agregar Resultado
+        </button>
+    </div>
+    <div class="card-datatable table-responsive pt-0">
+        <table class="datatables-basic table table-hover" id="data-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Codigo</th>
+                    <th>Denominación</th>
+                    <th>Indicador</th>
+                    <th th:if="${#lists.contains(session.roles.![nombre], 'ADMINISTRADOR')}">Opciones</th>
+                </tr>
+            </thead>
+            <tbody class="animate__animated animate__bounceInDown">
+                <tr th:each="resul, cont: ${resultados}" th:if="${resul.estado == 'ACTIVO'}">
+                    <th th:text="${cont.count}"></th>
+                    <th>
+                        <b th:text="${'COD RE'+resul.codigo}"></b>
+                    </th>
+                    <th th:text="${resul.denominacion}"></th>
+                    <th>
+                        <b th:text="'COD IE '+${resul.indicador.codigo}+': '"></b>
+                        "<span th:text="${resul.indicador.denominacion}"></span>"
+                    </th>
+                    <th th:if="${#lists.contains(session.roles.![nombre], 'ADMINISTRADOR')}">
+                        <button type="button" class="btn btn-sm btn-primary"
+                            th:onclick="cargarFormularioEdit([[${resul.idResultado}]])" data-bs-toggle="modal"
+                            data-bs-target="#modalFormularioResultado">
+                            <i class="fa-solid fa-pen-to-square"></i> Editar
+                        </button>
+                        <button type="button" class="btn btn-sm btn-danger"
+                            th:onclick="eliminar([[${'COD RE'+resul.codigo}]],[[${resul.idResultado}]])">
+                            <i class="fa-solid fa-trash"></i> Eliminar
+                        </button>
+                    </th>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<script>
+    $('#data-table').DataTable({
+        language: {
+            "sProcessing": "Procesando...",
+            "sLengthMenu": "Mostrar _MENU_ registros",
+            "sZeroRecords": "No se encontraron resultados",
+            "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+            "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+            "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+            "sInfoPostFix": "",
+            "sSearch": "Buscar:",
+            "sUrl": "",
+            "sInfoThousands": ",",
+            "sLoadingRecords": "Cargando...",
+            "oPaginate": {
+                "sFirst": "Primero",
+                "sLast": "Último",
+                "sNext": "Siguiente",
+                "sPrevious": "Anterior"
+            },
+            "oAria": {
+                "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+            }
+        }
+    });
+</script>

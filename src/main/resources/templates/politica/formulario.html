@@ -1,0 +1,124 @@
+<div class="modal-header" id="modal-header">
+  <h4 class="modal-title" th:text="${edit}? 'Modificar Politica' : 'Registrar Politica'"></h4>
+  <a type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></a>
+</div>
+<form id="formularioPolitica" method="post" th:action="@{/politica/guardar}" novalidate>
+  <input type="hidden" th:if="${edit != null}" th:field="${objetoPolitica.idPolitica}">
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-12 col-md-6">
+        <label class="form-label">Area estrategica</label>
+        <select id="select2Primary" class="select2 form-select" name="areas" th:field="${objetoPolitica.area}">
+          <option th:each="area: ${listaAreasEstrategicas}" th:value="${area.idArea}" th:text="${'AE'+area.codigo}+'. '+${area.nombre}"></option>
+        </select>
+        <div class="valid-feedback">Correcto!</div>
+        <div class="invalid-feedback">Porfavor Introduzca una año de inicio del pei</div>
+      </div>
+      <div class="col-12 col-md-3">
+        <label class="form-label">Código</label>
+        <input type="number" class="form-control" placeholder="Introduzca codigo" th:field="${objetoPolitica.codigo}">
+        <div class="valid-feedback">Correcto!</div>
+        <div class="invalid-feedback">Porfavor Introduzca codigo de la politica</div>
+      </div>
+      <div class="col-12 col-md-3">
+        <label class="form-label">Ponderación</label>
+        <input type="number" class="form-control" placeholder="Introduzca codigo" th:field="${objetoPolitica.ponderacion}">
+        <div class="valid-feedback">Correcto!</div>
+        <div class="invalid-feedback">Porfavor Introduzca codigo de la politica</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 col-md-12">
+        <label class="form-label">Descripción</label>
+        <textarea class="form-control" placeholder="Introduzca Mision" th:field="${objetoPolitica.descripcion}" required></textarea>
+        <div class="valid-feedback">Correcto!</div>
+        <div class="invalid-feedback">Porfavor Introduzca la descripcion de la politica.</div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="row">
+      <div class="col-12">
+        <input type="submit" class="btn btn-success" th:value="${edit}? 'Guardar Cambios': 'Guardar Registro'">
+        <a type="submit" class="btn btn-secondary" style="color: white;" data-bs-dismiss="modal">Cancelar</a>
+      </div>
+    </div>
+  </div>
+</form>
+
+<script>
+  $(document).ready(function () {
+    manejarEnvioFormulario('#formularioPolitica');
+    // $('#formularioPolitica').submit(function (event) {
+    //   event.preventDefault();
+    //   if (this.checkValidity() === false) {
+    //     $(this).addClass('was-validated');
+    //     return;
+    //   }
+    //   var form = $(this)[0];
+    //   var formData = new FormData(form);
+
+    //   $.ajax({
+    //     type: 'POST',
+    //     url: $(this).attr('action'),
+    //     data: formData,
+    //     contentType: false,  // No establecer el tipo de contenido aquí
+    //     processData: false,  // No procesar los datos
+    //     success: function (response) {
+
+    //       if (response === 'Se realizó el registro correctamente') {
+    //         cargarTabla();
+    //         cargarFormulario();
+    //         Swal.fire(
+    //           'Registrado!',
+    //           response + '.',
+    //           'success'
+    //         );
+    //       } else {
+    //         Swal.fire(
+    //           'Imposible Registrar!',
+    //           response + '.',
+    //           'error'
+    //         );
+    //       }
+
+    //     },
+    //     error: function (xhr, status, error) {
+    //       Swal.fire(
+    //         'Imposible Registrar!',
+    //         'Ha ocurrido un error. Por favor, intenta nuevamente.' + xhr, status, error,
+    //         'error'
+    //       );
+    //       console.error(error);
+    //       // Manejo de errores
+    //     }
+    //   });
+    // });
+
+
+
+    const modal = document.getElementById("modalFormularioPersona");
+    const header = document.getElementById("modal-header");
+
+    let isDragging = false;
+    let offset = { x: 0, y: 0 };
+
+    header.addEventListener("mousedown", (e) => {
+        isDragging = true;
+        offset.x = e.clientX - modal.getBoundingClientRect().left;
+        offset.y = e.clientY - modal.getBoundingClientRect().top;
+    });
+
+    document.addEventListener("mousemove", (e) => {
+        if (isDragging) {
+            modal.style.left = `${e.clientX - offset.x}px`;
+            modal.style.top = `${e.clientY - offset.y}px`;
+        }
+    });
+
+    document.addEventListener("mouseup", () => {
+        isDragging = false;
+    });
+
+  });
+</script>

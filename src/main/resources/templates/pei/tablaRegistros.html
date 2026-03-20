@@ -1,0 +1,115 @@
+<div class="card ">
+  <div class="card-header d-flex justify-content-lg-between">
+    <h5>Registros PEI</h5>
+    <button th:if="${#lists.contains(session.roles.![nombre], 'ADMINISTRADOR')}" type="button" class="btn btn-primary" onclick="cargarFormulario()" data-bs-toggle="modal"
+      data-bs-target="#modalFormularioPersona">
+      <i class="fa-solid fa-plus"></i> Agregar Pei
+    </button>
+  </div>
+  <div class="card-datatable table-responsive pt-0">
+    <table class="datatables-basic table table-hover" id="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Inicio</th>
+          <th>Fin</th>
+          <th>Mision</th>
+          <th>Vision</th>
+          <th>Opciones</th>
+        </tr>
+      </thead>
+      <tbody class="animate__animated animate__bounceInDown">
+        <tr th:each="pei, cont: ${peis}" th:if="${pei.estado != 'ELIMINADO'}">
+          <th th:text="${cont.count}"></th>
+          <th th:text="${pei.gestionInicio}"></th>
+          <th th:text="${pei.gestionFin}"></th>
+          <th th:text="${pei.mision}"></th>
+          <th th:text="${pei.vision}"></th>
+          <th>
+            <!-- <button type="button" class="btn btn-primary btn-icon rounded-pill" data-bs-tooltip="tooltip"
+              data-bs-placement="top" th:onclick="mostrarMatriz([[${pei.idPei}]])"
+              data-bs-custom-class="tooltip-primary" title="Ver Matriz" data-bs-toggle="modal"
+              data-bs-target="#modalFormularioPersona">
+              <i class="fa-solid fa-table-cells"></i>
+            </button> -->
+            <a type="button" class="btn btn-primary btn-icon rounded-pill" data-bs-tooltip="tooltip"
+              data-bs-placement="top" th:href="@{'/pei/verPoliticasPeiPDF/'+${pei.idPei}}"
+              data-bs-custom-class="tooltip-primary" title="Ver Politicas" target="_blank" >
+              <i class="fa-solid fa-table-list"></i>
+            </a>
+            <a type="button" class="btn btn-primary btn-icon rounded-pill" data-bs-tooltip="tooltip"
+              data-bs-placement="top" th:href="@{'/pei/verObjetivoPeiPDF/'+${pei.idPei}}"
+              data-bs-custom-class="tooltip-primary" title="Ver Objetivos" target="_blank">
+              <i class="fa-solid fa-table-list"></i>
+            </a>
+            <a type="button" class="btn btn-primary btn-icon rounded-pill" data-bs-tooltip="tooltip"
+              data-bs-placement="top" th:href="@{'/pei/verIndicadoresPeiPDF/'+${pei.idPei}}"
+              data-bs-custom-class="tooltip-primary" title="Ver Indicadores" target="_blank">
+              <i class="fa-solid fa-table-list"></i>
+            </a>
+            <a type="button" class="btn btn-primary btn-icon rounded-pill" data-bs-tooltip="tooltip"
+              data-bs-placement="top" th:href="@{'/pei/verMatrizPeiPDF2/'+${pei.idPei}}"
+              data-bs-custom-class="tooltip-primary" title="Ver Matriz" target="_blank">
+              <i class="fa-solid fa-table-cells"></i>
+            </a>
+            <!-- <button type="button" class="btn btn-success btn-icon rounded-pill" data-bs-tooltip="tooltip"
+                    data-bs-placement="top" th:onclick="mostrarMatrizVentana([[${pei.idPei}]])"
+                    data-bs-custom-class="tooltip-primary" title="Ver Matriz Ventana">
+              <i class="fa-solid fa-table-cells"></i>
+            </button> -->
+            <button th:if="${#lists.contains(session.roles.![nombre], 'ADMINISTRADOR')}" type="button" class="btn btn-primary btn-icon rounded-pill" data-bs-tooltip="tooltip"
+              data-bs-placement="top" th:onclick="cargarFormularioArea([[${pei.idPei}]])" data-bs-toggle="modal"
+              data-bs-target="#modalFormularioPersona" data-bs-custom-class="tooltip-primary" title="Área Estratégica">
+              <i class="fa-solid fa-layer-group"></i>
+            </button>
+            <button th:if="${#lists.contains(session.roles.![nombre], 'ADMINISTRADOR')}" type="button" class="btn btn-info btn-icon rounded-pill"
+              th:onclick="cargarFormularioEdit([[${pei.idPei}]])" data-bs-toggle="modal"
+              data-bs-target="#modalFormularioPersona" data-bs-tooltip="tooltip" data-bs-placement="top"
+              data-bs-custom-class="tooltip-info" title="Editar">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <button th:if="${#lists.contains(session.roles.![nombre], 'ADMINISTRADOR')}" type="button" class="btn btn-danger btn-icon rounded-pill" data-bs-tooltip="tooltip"
+              data-bs-placement="top" th:onclick="eliminar([[${pei.gestionInicio+'-'+pei.gestionFin}]],[[${pei.idPei}]])" data-bs-custom-class="tooltip-danger"
+              title="Eliminar">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </th>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<script>
+  $('#data-table').DataTable({
+    language: {
+      "sProcessing": "Procesando...",
+      "sLengthMenu": "Mostrar _MENU_ registros",
+      "sZeroRecords": "No se encontraron resultados",
+      "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+      "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+      "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+      "sInfoPostFix": "",
+      "sSearch": "Buscar:",
+      "sUrl": "",
+      "sInfoThousands": ",",
+      "sLoadingRecords": "Cargando...",
+      "oPaginate": {
+        "sFirst": "Primero",
+        "sLast": "Último",
+        "sNext": "Siguiente",
+        "sPrevious": "Anterior"
+      },
+      "oAria": {
+        "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+        "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+      }
+    }
+  });
+
+  $(document).ready(function () {
+    // Inicializar los tooltips
+    $('[data-bs-tooltip="tooltip"]').tooltip();
+  });
+</script>

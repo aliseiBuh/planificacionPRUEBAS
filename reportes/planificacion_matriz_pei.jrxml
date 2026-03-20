@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.21.0.final using JasperReports Library version 6.21.0-4f56c4f36cd19e17675219a9ac4692d5f0f13b06  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="planificacion_matriz_pei" pageWidth="792" pageHeight="612" orientation="Landscape" columnWidth="752" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b61aa856-709a-4bd7-ae1c-ef8d52032e72">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.jrdax"/>
+	<style name="Crosstab_CH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab_CG" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab_CT" mode="Opaque" backcolor="#005FB3">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab_CD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="datos" uuid="7ef9a9d8-1056-45d2-8e87-dc7f26dae490">
+		<property name="com.jaspersoft.studio.data.sql.tables">
+			<![CDATA[cG9saXRpY2EgLDE1LDY3LGI3MTEzZmU1LWEzYzAtNGU0Ny1hYjkzLWFiZTc1NmU5Zjc0MjtwZWkg
+LDQxNSwxNSw5YTQyODM4Yy0wZDhkLTRkMTktOTkwMS1kOWFhY2RjODc4ZDQ7YXJlYSAsMjE1LDY3
+LDhiZjRhMGRhLTA0YTQtNDUxMy05MTIzLTUyMTlmNGVlMDRkYTs=]]>
+		</property>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.jrdax"/>
+		<parameter name="idPei" class="java.lang.Long"/>
+		<queryString language="SQL">
+			<![CDATA[select concat('AE',a.codigo) as area_estrategica,
+       concat('PO',po.codigo) as codigo_politica,
+       concat('POLITICA') as politica,
+       po.descripcion as descripcion_politica from politica po
+left join area a on po.id_area = a.id_area
+left join pei p on a.id_pei = p.id_pei
+where p.id_pei = $P{idPei} 
+and po._estado != 'ELIMINADO']]>
+		</queryString>
+		<field name="area_estrategica" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="area_estrategica"/>
+			<property name="com.jaspersoft.studio.field.label" value="area_estrategica"/>
+		</field>
+		<field name="codigo_politica" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="codigo_politica"/>
+			<property name="com.jaspersoft.studio.field.label" value="codigo_politica"/>
+		</field>
+		<field name="politica" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="politica"/>
+			<property name="com.jaspersoft.studio.field.label" value="politica"/>
+		</field>
+		<field name="descripcion_politica" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="descripcion_politica"/>
+			<property name="com.jaspersoft.studio.field.label" value="descripcion_politica"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="politica"/>
+		</field>
+		<group name="area_estrategica">
+			<groupExpression><![CDATA[$F{area_estrategica}]]></groupExpression>
+		</group>
+	</subDataset>
+	<parameter name="idPei" class="java.lang.Long"/>
+	<queryString>
+		<![CDATA[select * from area where id_area = 1]]>
+	</queryString>
+	<field name="id_area" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="id_area"/>
+		<property name="com.jaspersoft.studio.field.label" value="id_area"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="area"/>
+	</field>
+	<field name="_estado" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="_estado"/>
+		<property name="com.jaspersoft.studio.field.label" value="_estado"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="area"/>
+	</field>
+	<field name="_fecha_modificacion" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="_fecha_modificacion"/>
+		<property name="com.jaspersoft.studio.field.label" value="_fecha_modificacion"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="area"/>
+	</field>
+	<field name="_modificacion_id_usuario" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="_modificacion_id_usuario"/>
+		<property name="com.jaspersoft.studio.field.label" value="_modificacion_id_usuario"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="area"/>
+	</field>
+	<field name="_fecha_registro" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="_fecha_registro"/>
+		<property name="com.jaspersoft.studio.field.label" value="_fecha_registro"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="area"/>
+	</field>
+	<field name="_registro_id_usuario" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="_registro_id_usuario"/>
+		<property name="com.jaspersoft.studio.field.label" value="_registro_id_usuario"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="area"/>
+	</field>
+	<field name="codigo" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="codigo"/>
+		<property name="com.jaspersoft.studio.field.label" value="codigo"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="area"/>
+	</field>
+	<field name="nombre" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="nombre"/>
+		<property name="com.jaspersoft.studio.field.label" value="nombre"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="area"/>
+	</field>
+	<field name="id_pei" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="id_pei"/>
+		<property name="com.jaspersoft.studio.field.label" value="id_pei"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="area"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="236" splitType="Stretch">
+			<crosstab>
+				<reportElement x="10" y="0" width="730" height="210" uuid="cb96cec5-b443-4ee2-9aaa-f73cd61c6188">
+					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+					<property name="com.jaspersoft.studio.crosstab.style.header" value="Crosstab_CH"/>
+					<property name="com.jaspersoft.studio.crosstab.style.group" value="Crosstab_CG"/>
+					<property name="com.jaspersoft.studio.crosstab.style.total" value="Crosstab_CT"/>
+					<property name="com.jaspersoft.studio.crosstab.style.detail" value="Crosstab_CD"/>
+				</reportElement>
+				<crosstabDataset>
+					<dataset>
+						<datasetRun subDataset="datos" uuid="896ced89-cecb-49aa-bf9c-3a1c996095e9">
+							<datasetParameter name="idPei">
+								<datasetParameterExpression><![CDATA[$F{id_pei}]]></datasetParameterExpression>
+							</datasetParameter>
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						</datasetRun>
+					</dataset>
+				</crosstabDataset>
+				<crosstabHeaderCell>
+					<cellContents>
+						<frame>
+							<reportElement x="0" y="0" width="100" height="20" uuid="68d09d16-ac5b-4fea-b2f9-d7903eeb66cd"/>
+							<staticText>
+								<reportElement x="0" y="0" width="100" height="20" uuid="60f17517-e3af-49db-898f-edb9a5abd80b"/>
+								<box>
+									<pen lineWidth="1.0"/>
+								</box>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="8" isBold="true"/>
+								</textElement>
+								<text><![CDATA[AREA ESTRATEGICA]]></text>
+							</staticText>
+						</frame>
+					</cellContents>
+				</crosstabHeaderCell>
+				<rowGroup name="area_estrategica" width="100" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{area_estrategica}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents mode="Opaque" style="Crosstab_CH">
+							<textField>
+								<reportElement x="0" y="0" width="100" height="40" uuid="f8e8ad9f-0f3a-489d-badc-209918c0edce"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="12" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{area_estrategica}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents mode="Opaque" style="Crosstab_CT"/>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<columnGroup name="politica" height="20" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{politica}]]></bucketExpression>
+					</bucket>
+					<crosstabColumnHeader>
+						<cellContents mode="Opaque" style="Crosstab_CH">
+							<textField>
+								<reportElement x="0" y="0" width="300" height="20" uuid="d5fea567-a013-4088-8291-d0fb58745da5"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{politica}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabColumnHeader>
+					<crosstabTotalColumnHeader>
+						<cellContents mode="Opaque" style="Crosstab_CT">
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						</cellContents>
+					</crosstabTotalColumnHeader>
+				</columnGroup>
+				<measure name="codigo_politica_MEASURE" class="java.lang.String">
+					<measureExpression><![CDATA[$F{codigo_politica}]]></measureExpression>
+				</measure>
+				<measure name="descripcion_politica_MEASURE" class="java.lang.String">
+					<measureExpression><![CDATA[$F{descripcion_politica}]]></measureExpression>
+				</measure>
+				<crosstabCell width="300" height="40">
+					<cellContents mode="Opaque" style="Crosstab_CD">
+						<textField>
+							<reportElement x="0" y="0" width="300" height="40" uuid="8b4d1d8f-31fc-44d7-b9eb-fdce5e6411c4">
+								<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+							</reportElement>
+							<textElement verticalAlignment="Middle" markup="none">
+								<paragraph leftIndent="4"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{codigo_politica_MEASURE}+" - "+$V{descripcion_politica_MEASURE}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="0" height="40" columnTotalGroup="politica">
+					<cellContents mode="Opaque" style="Crosstab_CT"/>
+				</crosstabCell>
+				<crosstabCell width="300" height="0" rowTotalGroup="area_estrategica">
+					<cellContents mode="Opaque" style="Crosstab_CT">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="0" height="0" rowTotalGroup="area_estrategica" columnTotalGroup="politica">
+					<cellContents mode="Opaque" style="Crosstab_CT"/>
+				</crosstabCell>
+			</crosstab>
+		</band>
+	</detail>
+</jasperReport>

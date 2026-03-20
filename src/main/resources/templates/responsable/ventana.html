@@ -1,0 +1,39 @@
+<h4 class="py-3 mb-4"><span class="text-muted fw-light">Menu /</span> Responsable</h4>
+
+<div id="tablaRegistro"></div>
+
+<div class="modal fade" id="modalFormularioResponsable" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" id="contenidoModalResponsable"></div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        cargarTabla();
+
+    });
+
+    function cargarTabla() {
+        $.ajax({
+            type: 'POST',
+            url: "/responsable/tablaRegistros",  // Ruta del metodo del controlador en Spring Boot
+            success: function (response) {
+                $("#tablaRegistro").html(response);  // Actualiza el contenido del div con la respuesta del servidor
+            }
+        });
+    }
+
+    function cargarFormulario() {
+        cargarFormularioAlert("/responsable/formulario", "#contenidoModalResponsable", "#formularioResponsable");
+    }
+
+    function cargarFormularioEdit(id) {
+        cargarFormularioEditAlert(id, "/responsable/formulario", "#contenidoModalResponsable", "#formularioResponsable");
+    }
+
+    function eliminar(nombre, id) {
+        eliminarRegistroAlert(nombre, id, "/responsable/eliminar", cargarTabla);
+    }
+</script>
+</body>
