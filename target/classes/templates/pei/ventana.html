@@ -1,0 +1,242 @@
+<h4 class="py-3 mb-4"><span class="text-muted fw-light">Menu /</span> Plan Estratégico Institucional</h4>
+
+<div id="tablaRegistro"></div>
+
+<div class="modal fade modal-move" id="modalFormularioPersona" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content" id="contenidoModalForm"></div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    cargarTabla();
+
+  });
+
+  function cargarTabla() {
+    $.ajax({
+      type: 'POST',
+      url: "/pei/tablaRegistros",  // Ruta del metodo del controlador en Spring Boot
+      success: function (response) {
+        $("#tablaRegistro").html(response);  // Actualiza el contenido del div con la respuesta del servidor
+      }
+    });
+  }
+
+  function cargarFormulario() {
+    cargarFormularioAlert("/pei/formulario", "#contenidoModalForm", "#formularioPei");
+  }
+
+  function cargarFormularioEdit(id) {
+    cargarFormularioEditAlert(id, "/pei/formularioEdit", "#contenidoModalForm", "#formularioPei");
+  }
+
+  function eliminar(nombre, id) {
+    eliminarRegistroAlert(nombre, id, "/pei/eliminar", cargarTabla);
+  }
+
+  function cargarFormularioArea(id) {
+    $.ajax({
+      url: "/cargar-datos", // URL para verificar la sesión
+      method: "GET",
+      success: function () {
+        // Si la sesión es válida, procede a cargar el formulario
+        $.ajax({
+          type: 'POST',
+          url: "/pei/formularioArea/" + id,  // Ruta del metodo del controlador en Spring Boot
+          success: function (response) {
+            $("#contenidoModalForm").html(response);  // Actualiza el contenido del div con la respuesta del servidor
+            $('.select2').select2({
+              dropdownParent: $('#formularioPei')  // Especificar el parent para el dropdown
+            });
+          },
+          error: function (xhr) {
+            console.error('Error en la solicitud del formulario:', xhr);
+          }
+        });
+      },
+      error: function (xhr) {
+        if (xhr.status === 401) {
+          // Si la sesión ha expirado, muestra una alerta con SweetAlert2
+          Swal.fire({
+            title: 'Sesión expirada',
+            text: 'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.',
+            icon: 'warning',
+            confirmButtonText: 'Ir al login'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.href = '/form-login'; // Redirige a la página de login
+            }
+          });
+        }
+      }
+    });
+  }
+
+  function cargarFormularioAreaEdit(pei, area) {
+
+    $.ajax({
+      url: "/cargar-datos", // URL para verificar la sesión
+      method: "GET",
+      success: function () {
+        // Si la sesión es válida, procede a cargar el formulario
+        $.ajax({
+          type: 'POST',
+          url: "/pei/formularioAreaEdit/" + pei + "/" + area,  // Ruta del metodo del controlador en Spring Boot
+          success: function (response) {
+            $("#contenidoModalForm").html(response);  // Actualiza el contenido del div con la respuesta del servidor
+            $('.select2').select2({
+              dropdownParent: $('#formularioPei')  // Especificar el parent para el dropdown
+            });
+          },
+          error: function (xhr) {
+            console.error('Error en la solicitud del formulario:', xhr);
+          }
+        });
+
+      },
+      error: function (xhr) {
+        if (xhr.status === 401) {
+          // Si la sesión ha expirado, muestra una alerta con SweetAlert2
+          Swal.fire({
+            title: 'Sesión expirada',
+            text: 'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.',
+            icon: 'warning',
+            confirmButtonText: 'Ir al login'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.href = '/form-login'; // Redirige a la página de login
+            }
+          });
+        }
+      }
+    });
+  }
+
+  function eliminarArea(area) {
+    // Verifica si la sesión está activa antes de intentar eliminar
+    $.ajax({
+      url: "/cargar-datos",  // URL para verificar la sesión
+      method: "GET",
+      success: function () {
+        // Si la sesión es válida, procede con la eliminación
+        Swal.fire({
+          title: 'Eliminar Registro',
+          text: '¿Estas seguro de eliminar este registro?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, eliminar',
+          cancelButtonText: 'Cancelar',
+          reverseButtons: true
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Si el usuario confirma, realizar la llamada AJAX
+            $.ajax({
+              url: '/area/eliminar/' + area, // Cambia esto por la URL de tu script PHP
+              type: 'POST',
+              success: function (response) {
+                cargarFormularioArea($('#idPei').val());
+                Swal.fire(
+                  'Eliminado!',
+                  response,
+                  'success'
+                );
+                // Puedes agregar aquí código para actualizar la interfaz de usuario
+              },
+              error: function (xhr, status, error) {
+                Swal.fire(
+                  'Error',
+                  'Hubo un problema al eliminar el registro. Por favor, inténtalo de nuevo.',
+                  'error'
+                );
+              }
+            });
+          }
+        });
+      },
+      error: function (xhr) {
+        if (xhr.status === 401) {
+          // Si la sesión ha expirado, muestra una alerta con SweetAlert2
+          Swal.fire({
+            title: 'Sesión expirada',
+            text: 'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.',
+            icon: 'warning',
+            confirmButtonText: 'Ir al login'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.href = '/form-login';  // Redirige a la página de login
+            }
+          });
+        }
+      }
+    });
+  }
+
+  function mostrarMatriz(id) {
+    $.ajax({
+      type: 'GET',
+      url: "/pei/verMatriz/"+id,  // Ruta del metodo del controlador en Spring Boot
+      success: function (response) {
+        $("#contenidoModalForm").html(response);  // Actualiza el contenido del div con la respuesta del servidor
+      },
+      error: function (xhr) {
+        console.error('Error en la solicitud del formulario:', xhr);
+      }
+    });
+  }
+
+  function mostrarMatrizVentana(id) {
+    $.ajax({
+      type: 'GET',
+      url: "/pei/verMatriz-independiente/" + id,  // Ruta del método del controlador en Spring Boot
+      success: function (response) {
+        // Abrir una nueva pestaña
+        var nuevaVentana = window.open('', '_blank');
+
+        // Insertar el contenido de la respuesta en la nueva pestaña
+        nuevaVentana.document.open();
+        nuevaVentana.document.write(response);
+        nuevaVentana.document.close();
+      },
+      error: function (xhr) {
+        console.error('Error en la solicitud del formulario:', xhr);
+      }
+    });
+  }
+</script>
+
+<style>
+  .highlight {
+    background-color: #cccccc;
+    /* Color de fondo para el resaltado */
+  }
+
+   /* PRUEBAS */
+  /* Estilos personalizados */
+  .custom-table {
+    border-spacing: 0; /* Evita que los bordes se superpongan */
+    border: 1px solid black; /* Borde externo de la tabla */
+  }
+  .custom-table th, .custom-table td {
+    border: 1px solid black; /* Borde interno de cada celda */
+    margin: 1px;
+    padding: 1px;
+  }
+  .custom-inner-table {
+    border-spacing: 0; /* Asegura que no haya separación entre celdas */
+    width: 100%;
+  }
+  /* Eliminar padding en la celda que contiene la tabla anidada */
+  .custom-table td > table {
+    margin: -2px; /* Ajuste para que no haya espacio entre la tabla anidada y la celda */
+  }
+
+  .encabezado {
+    font-size: 8px;
+  }
+
+  .text-cuerpo {
+    font-size: 8px;
+  }
+</style>

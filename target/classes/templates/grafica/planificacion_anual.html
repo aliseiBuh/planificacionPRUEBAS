@@ -1,0 +1,107 @@
+<div>
+    <h4 class="py-3 mb-4"><span class="text-muted fw-light">Menú /</span> Planificación Anual de Metas</h4>
+
+    <!-- Gráfico + Áreas -->
+    <div class="row">
+        <div class="col-md-8 col-12 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Gráfica Planificación Anual de Metas</h4>
+<!-- 
+<button onclick="calcularPorcentajes()" class="btn btn-primary">
+    Calcular Porcentajes
+</button> -->
+
+<!-- <script>
+function calcularPorcentajes() {
+    $.ajax({
+        url: '/porcentajes/calcular',
+        type: 'POST',
+        success: function(response) {
+            alert(response);
+            cargarGrafico(); // Recargar el gráfico
+        },
+        error: function(error) {
+            alert('Error al calcular');
+        }
+    });
+}
+</script> -->
+<!-- prueba -->
+                </div>
+                <div class="card-body">
+                    <div class="recent-report__chart">
+                        <div id="chart1"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Áreas -->
+        <div class="col-md-4 mb-4">
+            <div class="card p-3">
+                <h5 class="card-title mb-2">Áreas Estratégicas</h5>
+                <div id="div-areas-thymeleaf">
+                    <ul class="list-unstyled" style="list-style-type: disc; padding-left: 20px;">
+                        <li th:each="area : ${listaAreas}" th:text="|Área ${area.idArea}: ${area.nombre}|" class="mb-2">
+                            Nombre del área
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <h5 class="card-header">Tabla de Planificación Anual de Metas</h5>
+                <div class="card-datatable table-responsive pt-0 text-nowrap" style="overflow-x: auto;">
+                    <!-- <table class="datatables-basic table table-hover" > -->
+                    <table class="dt-complex-header table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center; font-weight: bold;">#</th>
+                                <th style="text-align: center; font-weight: bold;">Nombre del Area</th>
+                                <th style="text-align: center; font-weight: bold;">Gestion 2021</th>
+                                <th style="text-align: center; font-weight: bold;">Gestion 2022</th>
+                                <th style="text-align: center; font-weight: bold;">Gestion 2023</th>
+                                <th style="text-align: center; font-weight: bold;">Gestion 2024</th>
+                                <th style="text-align: center; font-weight: bold;">Gestion 2025</th>
+                                <th style="text-align: center; font-weight: bold;">Metas al 2025</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="area : ${listaAreas}" th:if="${area.estado == 'ACTIVO'}">
+                                <td style="text-align: center; font-weight: bold;" th:text="${area.idArea}"></td>
+                                <td th:text="${area.nombre}"></td>
+                                <!-- Agregar aquí las celdas para cada gestión -->
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+
+                               
+                            </tr>
+                            <tr>
+                            <td colspan="2" style="text-align: center; font-weight: bold;">TOTAL</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+   <!-- tabla_prueba -->
+    
+    <!-- tabla de resultados -->
+    <div>
+        <!-- Contenido adicional aquí -->
+    </div>
+
+    <script src="/assets/js/chart-apexcharts.js"></script>
+</div>

@@ -1,0 +1,38 @@
+<h4 class="py-3 mb-4"><span class="text-muted fw-light">Menu /</span> Objetivo</h4>
+
+<div id="tablaRegistro"></div>
+
+<div class="modal fade" id="modalFormularioObjetivo" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" id="contenidoModalObjetivo"></div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        cargarTabla();
+
+    });
+
+    function cargarTabla() {
+        $.ajax({
+            type: 'POST',
+            url: "/objetivo/tablaRegistros",  // Ruta del metodo del controlador en Spring Boot
+            success: function (response) {
+                $("#tablaRegistro").html(response);  // Actualiza el contenido del div con la respuesta del servidor
+            }
+        });
+    }
+
+    function cargarFormulario() {
+        cargarFormularioAlert("/objetivo/formulario", "#contenidoModalObjetivo", "#formularioObjetivo");
+    }
+
+    function cargarFormularioEdit(id) {
+        cargarFormularioEditAlert(id, "/objetivo/formulario", "#contenidoModalObjetivo", "#formularioObjetivo");
+    }
+
+    function eliminar(nombre, id) {
+        eliminarRegistroAlert(nombre, id, "/objetivo/eliminar", cargarTabla);
+    }
+</script>

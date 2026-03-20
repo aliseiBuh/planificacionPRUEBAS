@@ -1,0 +1,145 @@
+<div class="modal-header">
+    <h4 class="modal-title" th:text="${edit}? 'Modificar Resultado' : 'Registrar Resultado'"></h4>
+    <a type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></a>
+</div>
+<form id="formularioResultado" method="post"
+    th:action="${edit}? @{/resultado/RegistrarResultado} : @{/resultado/RegistrarResultado}" novalidate>
+    <input type="hidden" th:if="${edit != null}" th:field="${resultado.idResultado}">
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <label class="form-label" for="modalEditUserFirstName">Codigo</label>
+                <input type="text" th:field="${resultado.codigo}" class="form-control" placeholder="Introduzca codigo"
+                    required />
+                <div class="valid-feedback">Correcto!</div>
+                <div class="invalid-feedback">Porfavor Introduzca un codigo</div>
+            </div>
+            <div class="col-12 col-md-6">
+                <label class="form-label">Indicador</label>
+                <select id="select2Basic" class="select2 form-select form-select-lg" data-allow-clear="true"
+                    th:field="${resultado.indicador}" onchange="toggleInputField(this)">
+                    <option value="">Seleccione una opción</option>
+                    <option th:each="indicador : ${indicadores}" th:value="${indicador.idIndicador}"
+                        th:selected="${indicador == resultado.indicador}" th:text="${indicador.denominacion}"
+                        th:attr="data-idTipoCalculo=${indicador.tipoCalculo.idTipoCalculo}">
+                    </option>
+                </select>
+                <div class="valid-feedback">Correcto!</div>
+                <div class="invalid-feedback">Debe seleccionar un indicador.</div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <!-- Label para los campos de valor -->
+                <label class="form-label" for="modalEditUserLastName" id="labelValorEsperado" style="display: none;">
+                    Valor esperado
+                </label>
+
+                <!-- Campo para valor entero o promedio -->
+                <div class="input-group" id="inputGroupEnteroPromedio" style="display: none;">
+                    <!-- <span class="input-group-text">$</span> -->
+                    <input type="number" id="inputEnteroPromedio" class="form-control" placeholder="numérico"
+                        th:field="${resultado.totalR}" min="0" required />
+                    <span class="input-group-text">.00</span>
+                </div>
+
+                <!-- Campo para valor porcentaje -->
+                <div class="input-group" id="inputGroupPorcentaje" style="display: none;">
+                    <!-- <span class="input-group-text">%</span> -->
+                    <input type="text" id="inputPorcentaje" class="form-control decimal-mask" placeholder="Percentaje"
+                        th:field="${resultado.totalDecimalR}" required />
+                    <span class="input-group-text">%</span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-md-12">
+                <label class="form-label" for="modalEditUserLastName">Denominación</label>
+                <textarea th:field="${resultado.denominacion}" class="form-control" placeholder="Introduzca Nombre"
+                    required> </textarea>
+                <div class="valid-feedback">Correcto!</div>
+                <div class="invalid-feedback">Porfavor Introduzca una denominación.</div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div class="row">
+            <div class="col-12">
+                <input type="submit" class="btn btn-success" th:value="${edit}? 'Guardar Cambios': 'Guardar Registro'">
+                <a type="submit" class="btn btn-secondary" style="color: white;" data-bs-dismiss="modal">Cancelar</a>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    // Escucha el evento de apertura del modal
+    $('#modalFormularioResultado').on('shown.bs.modal', function () {
+        // Busca el select dentro del contenido cargado dinámicamente
+        var selectElement = document.getElementById("select2Basic");
+
+        // Verifica si el select tiene una opción seleccionada y llama a toggleInputField
+        if (selectElement) {
+            var selectedOption = selectElement.options[selectElement.selectedIndex];
+            var idTipoCalculo = selectedOption.getAttribute("data-idTipoCalculo");
+            console.log(idTipoCalculo + " idTipoCalculo");
+
+            // Si hay un valor válido de tipoCalculo, llama a toggleInputField
+            if (idTipoCalculo) {
+                toggleInputField(selectElement);
+            }
+        }
+    });
+
+
+    function toggleInputField(selectElement) {
+        // Obtener la opción seleccionada y su atributo data-idTipoCalculo
+        var selectedOption = selectElement.options[selectElement.selectedIndex];
+        var idTipoCalculo = selectedOption.getAttribute("data-idTipoCalculo");
+
+        console.log(idTipoCalculo + "aquiii");
+
+        // Convertir idTipoCalculo a número para usar en condiciones
+        idTipoCalculo = parseInt(idTipoCalculo);
+
+        // Referencias a los grupos de entrada
+        var inputGroupEnteroPromedio = document.getElementById("inputGroupEnteroPromedio");
+        var inputGroupPorcentaje = document.getElementById("inputGroupPorcentaje");
+
+        // Referencias a los campos de entrada
+        var inputEnteroPromedio = document.getElementById("inputEnteroPromedio");
+        var inputPorcentaje = document.getElementById("inputPorcentaje");
+
+        // Referencia al label
+        var labelValorEsperado = document.getElementById("labelValorEsperado");
+
+        // Mostrar el grupo adecuado según el idTipoCalculo y también el label
+        if (idTipoCalculo === 1 || idTipoCalculo === 3) { // Entero o Promedio
+            inputGroupEnteroPromedio.style.display = "flex";
+            inputGroupPorcentaje.style.display = "none";
+            inputEnteroPromedio.required = true;
+            inputPorcentaje.required = false;
+            labelValorEsperado.style.display = "block";
+        } else if (idTipoCalculo === 2) { // Porcentaje
+            inputGroupEnteroPromedio.style.display = "none";
+            inputGroupPorcentaje.style.display = "flex";
+            inputEnteroPromedio.required = false;
+            inputPorcentaje.required = true;
+            labelValorEsperado.style.display = "block";
+        } else {
+            inputGroupEnteroPromedio.style.display = "none";
+            inputGroupPorcentaje.style.display = "none";
+            inputEnteroPromedio.required = false;
+            inputPorcentaje.required = false;
+            labelValorEsperado.style.display = "none";
+        }
+    }
+</script>
+
+<script>
+    $(document).ready(function () {
+        manejarEnvioFormulario('#formularioResultado');
+
+    });
+</script>

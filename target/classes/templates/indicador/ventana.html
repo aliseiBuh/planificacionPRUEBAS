@@ -1,0 +1,38 @@
+<h4 class="py-3 mb-4"><span class="text-muted fw-light">Menu /</span> Indicadores Estratégicos</h4>
+
+<div id="tablaRegistro"></div>
+
+<div class="modal fade" id="modalFormularioPersona" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" id="contenidoModalIndicador"></div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    cargarTabla();
+
+  });
+
+  function cargarTabla() {
+    $.ajax({
+      type: 'POST',
+      url: "/indicador/tablaRegistros",  // Ruta del metodo del controlador en Spring Boot
+      success: function (response) {
+        $("#tablaRegistro").html(response);  // Actualiza el contenido del div con la respuesta del servidor
+      }
+    });
+  }
+
+  function cargarFormulario() {
+    cargarFormularioAlert("/indicador/formulario", "#contenidoModalIndicador", "#formularioIndicador");
+  }
+
+  function cargarFormularioEdit(id) {
+    cargarFormularioEditAlert(id, "/indicador/formularioEdit", "#contenidoModalIndicador", "#formularioIndicador");
+  }
+
+  function eliminar(nombre, id) {
+    eliminarRegistroAlert(nombre, id, "/indicador/eliminar", cargarTabla);
+  }
+</script>

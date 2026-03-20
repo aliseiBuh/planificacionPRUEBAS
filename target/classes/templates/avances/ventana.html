@@ -1,0 +1,54 @@
+<h4 class="py-3 mb-4"><span class="text-muted fw-light">Menu /</span>Reportes de Avances</h4>
+
+<div id="tablaRegistro"></div>
+
+<div class="modal fade" id="modalFormularioPersona" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" id="contenidoModalIndicador"></div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalFormularioArchivo" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content" id="contenidoModalArchivo"></div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    cargarTabla();
+  });
+
+  function cargarTabla() {
+    $.ajax({
+      type: 'POST',
+      url: "/avance/tablaRegistros",  // Ruta del metodo del controlador en Spring Boot
+      success: function (response) {
+        $("#tablaRegistro").html(response);  // Actualiza el contenido del div con la respuesta del servidor
+      }
+    });
+  }
+
+  function cargarFormulario() {
+    cargarFormularioAlert("/avance/formulario", "#contenidoModalIndicador", "#formularioIndicador");
+  }
+
+  function cargarFormularioEdit(id) {
+    cargarFormularioEditAlert(id, "/avance/formularioEdit", "#contenidoModalIndicador", "#formularioIndicador");
+  }
+
+  function eliminar(nombre, id) {
+    eliminarRegistroAlert(nombre, id, "/avance/eliminar", cargarTabla);
+  }
+
+  function cargarFormularioArchivo(id) {
+    $.ajax({
+      type: 'POST',
+      url: "/avance/formularioAdjunto/"+id,
+      success: function (response) {
+        $("#contenidoModalArchivo").html(response);
+      }
+    });
+  }
+
+</script>

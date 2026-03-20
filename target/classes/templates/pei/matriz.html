@@ -1,0 +1,82 @@
+<div class="modal-header" id="modal-header">
+    <h4 class="modal-title" >Matriz de Plan Estrategico Institucional</h4>
+    <a type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></a>
+</div>
+<div class="modal-body" style="height: 600px; overflow-y: auto;">
+<!--    <embed src="/pei/verMatrizPeiPDF/1" type="application/pdf" frameborder="0" style="height: 600px; width: 100%;">-->
+    <div>
+        <table class="custom-table">
+            <thead>
+            <tr style="width: 100%;">
+                <th rowspan="2" class="encabezado" style="width: 5%">AREA ESTRATEGICA</th>
+                <th rowspan="2" class="encabezado" style="width: 5%">POND.</th>
+                <th colspan="3" class="encabezado"
+                style="width: 24%;">POLITICA DE DESARROLLO</th>
+                <th colspan="3" class="encabezado"
+                    style="width: 23%;">OBJETIVO ESTRATEGICO</th>
+                <th colspan="5" class="encabezado"
+                    style="width: 23%;">INDICADOR ESTRATEGICO</th>
+            </tr>
+            <tr>
+                <!-- Sub encabezado de politica de desarrollo -->
+                <th class="encabezado" width="5%">Cond. PD</th>
+                <th class="encabezado" width="5%">POND.</th>
+                <th class="encabezado" width="20%">Descripcion</th>
+                <!-- ---------------------------------------- -->
+                <!-- Sub encabezado de objetivo estrategico -->
+                <th class="encabezado" width="5%">Cond. OE</th>
+                <th class="encabezado" width="5%">POND.</th>
+                <th class="encabezado" width="20%">Descripcion</th>
+                <!-- ---------------------------------------- -->
+                <!-- Sub encabezado de indicador estrategico -->
+                <th class="encabezado" width="5%">Cond. IE</th>
+                <th class="encabezado" width="5%">POND.</th>
+                <th class="encabezado" width="20%">Descripcion</th>
+                <th class="encabezado" width="10%">TIPO</th>
+                <th class="encabezado" width="10%">CATEGORIA</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="area, cont: ${listaAreas}">
+                <td th:text="${area.codigo}" class="text-cuerpo"></td>
+                <td th:text="${area.ponderacion+' %'}" class="text-cuerpo"></td>
+                <td colspan="11" class="text-cuerpo">
+                    <table class="custom-inner-table">
+                        <tbody>
+                        <tr th:each="politica, cont: ${area.politicas}">
+                            <td th:text="${politica.codigo}" class="text-cuerpo" style="width: 5.25%;"></td>
+                            <td th:text="${politica.ponderacion+' %'}" class="text-cuerpo" style="width: 5.25%;"></td>
+                            <td th:text="${politica.descripcion}" class="text-cuerpo" style="width: 20.50%"></td>
+                            <td colspan="8" class="text-cuerpo">
+                                <table class="custom-inner-table">
+                                    <tbody>
+                                    <tr th:each="objetivo, cont: ${politica.objetivos}">
+                                        <td th:text="${objetivo.codigo}" class="text-cuerpo"></td>
+                                        <td th:text="${objetivo.ponderacion+' %'}" class="text-cuerpo"></td>
+                                        <td th:text="${objetivo.descripcion}" class="text-cuerpo"></td>
+                                        <td colspan="5" class="text-cuerpo">
+                                            <table class="custom-inner-table">
+                                                <tbody>
+                                                <tr th:each="indicador, cont: ${objetivo.indicadores}">
+                                                    <td th:text="${indicador.codigo}" class="text-cuerpo"></td>
+                                                    <td th:text="${indicador.ponderacion+' %'}" class="text-cuerpo"></td>
+                                                    <td th:text="${indicador.denominacion}" class="text-cuerpo"></td>
+                                                    <td th:text="${indicador.tipoIndicador.nombre}" class="text-cuerpo"></td>
+                                                    <td th:text="${indicador.categoriaIndicador.nombre}" class="text-cuerpo"></td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

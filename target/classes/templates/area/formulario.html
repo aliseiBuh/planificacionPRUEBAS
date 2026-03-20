@@ -1,0 +1,46 @@
+<div class="modal-header">
+  <h4 class="modal-title" th:text="${edit}? 'Modificar Área Estratégica' : 'Registrar Área Estratégica'"></h4>
+  <a type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></a>
+</div>
+<form id="formularioArea" method="post" th:action="${edit}? @{/area/Modificar} : @{/area/Registrar}" novalidate>
+  <input type="hidden" th:if="${edit != null}" th:field="${area.idArea}">
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-12 col-md-6">
+        <label class="form-label" for="modalEditUserFirstName">Codigo</label>
+        <input type="number" min="0" class="form-control fecha" placeholder="Introduzca un codigo" name="fechaFin"
+          th:field="${area.codigo}" required />
+        <div class="valid-feedback">Correcto!</div>
+        <div class="invalid-feedback">Porfavor Introduzca el codigo del Área Estratégica</div>
+      </div>
+      <div class="col-12 col-md-6">
+        <label class="form-label" for="modalEditUserLastName">Ponderacion</label>
+        <input type="text" class="form-control fecha" placeholder="Introduzca la ponderación" name="fechaFin"
+          th:field="${area.ponderacion}" required />
+        <div class="valid-feedback">Correcto!</div>
+        <div class="invalid-feedback">Porfavor Introduzca la ponderación</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 col-md-12">
+        <label class="form-label" for="modalEditUserLastName">Area Estratégica</label>
+        <input type="text" class="form-control fecha" placeholder="Introduzca el área estratégica" name="fechaFin"
+          th:field="${area.nombre}" required />
+        <div class="valid-feedback">Correcto!</div>
+        <div class="invalid-feedback">Porfavor Introduzca un Área Estratégica</div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="row">
+      <div class="col-12">
+        <input type="submit" class="btn btn-success" th:value="${edit}? 'Guardar Cambios': 'Guardar Registro'">
+        <a type="submit" class="btn btn-secondary" style="color: white;" data-bs-dismiss="modal">Cancelar</a>
+      </div>
+    </div>
+  </div>
+</form>
+
+<script>
+  manejarEnvioFormulario('#formularioArea');
+</script>

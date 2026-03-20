@@ -1,0 +1,145 @@
+<div class="modal-header">
+  <h4 class="modal-title" th:text="${edit}? 'Modificar Indicador' : 'Registrar Indicador'"></h4>
+  <a type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></a>
+</div>
+<form id="formularioIndicador" method="post" th:action="${edit}? @{/indicador/Modificar} : @{/indicador/Registrar}"
+  novalidate>
+  <input type="hidden" th:if="${edit != null}" th:field="${indicador.idIndicador}">
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-12 col-md-12">
+        <label class="form-label" for="modalEditUserFirstName">Objetivo</label>
+        <select class="select2 form-select form-select-lg" 
+          th:field="${indicador.objetivo}">
+          <option value="">Seleccione una opción</option>
+          <option th:each="objetivo : ${objetivos}" th:value="${objetivo.idObjetivo}"
+            th:selected="${objetivo == indicador.objetivo}" th:text="${objetivo.codigo+'. '+objetivo.descripcion}">
+          </option>
+        </select>
+        <div class="valid-feedback">Correcto!</div>
+        <div class="invalid-feedback">Debe seleccionar a una politica.</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 col-md-6">
+        <label class="form-label" for="modalEditUserFirstName">Codigo</label>
+        <input type="number" class="form-control" placeholder="Introduzca un codigo" th:field="${indicador.codigo}"
+          required />
+        <div class="valid-feedback">Correcto!</div>
+        <div class="invalid-feedback">Porfavor Introduzca el codigo del Indicador</div>
+      </div>
+      <div class="col-12 col-md-6">
+        <label class="form-label" for="modalEditUserFirstName">Ponderacion</label>
+        <input type="number" class="form-control" placeholder="Introduzca una ponderacion" th:field="${indicador.ponderacion}"
+          required />
+        <div class="valid-feedback">Correcto!</div>
+        <div class="invalid-feedback">Porfavor Introduzca el codigo la ponderacion</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 col-md-6">
+        <label class="form-label" for="modalEditUserFirstName">Tipo</label>
+        <select class="select2 form-select form-select-lg" 
+          th:field="${indicador.tipoIndicador}">
+          <option value="">Seleccione una opción</option>
+          <option th:each="tipo : ${tipos}" th:value="${tipo.idTipoIndicador}"
+            th:selected="${tipo == indicador.tipoIndicador}" th:text="${tipo.nombre}">
+          </option>
+        </select>
+        <div class="valid-feedback">Correcto!</div>
+        <div class="invalid-feedback">Debe seleccionar a un tipo.</div>
+      </div>
+      <div class="col-12 col-md-6">
+        <label class="form-label" for="modalEditUserFirstName">Categoria</label>
+        <select class="select2 form-select form-select-lg" 
+          th:field="${indicador.categoriaIndicador}">
+          <option value="">Seleccione una opción</option>
+          <option th:each="categoria : ${categorias}" th:value="${categoria.idCategoriaIndicador}"
+            th:selected="${categoria == indicador.categoriaIndicador}" th:text="${categoria.nombre}">
+          </option>
+        </select>
+        <div class="valid-feedback">Correcto!</div>
+        <div class="invalid-feedback">Debe seleccionar a una categoria.</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 col-md-6">
+        <label class="form-label" for="modalEditUserLastName">Denominación</label>
+        <textarea class="form-control" th:field="${indicador.denominacion}" placeholder="Introduzca Denominación"  required></textarea>
+        <div class="valid-feedback">Correcto!</div>
+        <div class="invalid-feedback">Porfavor Introduzca una Denominación</div>
+      </div>
+      <div class="col-12 col-md-6">
+        <label class="form-label" for="modalEditUserFirstName">Calculo</label>
+        <select class="select2 form-select form-select-lg" 
+          th:field="${indicador.tipoCalculo}">
+          <option value="">Seleccione una opción</option>
+          <option th:each="tipo : ${tipoCalculos}" th:value="${tipo.idTipoCalculo}"
+            th:selected="${tipo == indicador.tipoCalculo}" th:text="${tipo.nombre}">
+          </option>
+        </select>
+        <div class="valid-feedback">Correcto!</div>
+        <div class="invalid-feedback">Debe seleccionar a una categoria.</div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="row">
+      <div class="col-12">
+        <input type="submit" class="btn btn-success" th:value="${edit}? 'Guardar Cambios': 'Guardar Registro'">
+        <a type="submit" class="btn btn-secondary" style="color: white;" data-bs-dismiss="modal">Cancelar</a>
+      </div>
+    </div>
+  </div>
+</form>
+
+<script>
+  $(document).ready(function () {
+    manejarEnvioFormulario('#formularioIndicador');
+    // $('#formularioIndicador').submit(function (event) {
+    //   event.preventDefault();
+    //   if (this.checkValidity() === false) {
+    //     $(this).addClass('was-validated');
+    //     return;
+    //   }
+    //   var form = $(this)[0];
+    //   var formData = new FormData(form);
+
+    //   $.ajax({
+    //     type: 'POST',
+    //     url: $(this).attr('action'),
+    //     data: formData,
+    //     contentType: false,  // No establecer el tipo de contenido aquí
+    //     processData: false,  // No procesar los datos
+    //     success: function (response) {
+    //       if (response === 'Se realizó el registro correctamente') {
+    //         cargarTabla();
+    //         cargarFormulario();
+    //         Swal.fire(
+    //           'Registrado!',
+    //           response + '.',
+    //           'success'
+    //         );
+    //       } else {
+    //         Swal.fire(
+    //           'Imposible Registrar!',
+    //           response,
+    //           'error'
+    //         );
+    //       }
+
+    //     },
+    //     error: function (xhr, status, error) {
+    //       Swal.fire(
+    //         'Imposible Registrar!',
+    //         'Ha ocurrido un error. Por favor, intenta nuevamente.' + xhr, status, error,
+    //         'error'
+    //       );
+    //       console.error(error);
+    //       // Manejo de errores
+    //     }
+    //   });
+    // });
+
+  });
+</script>

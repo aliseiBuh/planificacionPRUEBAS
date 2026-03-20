@@ -1,0 +1,39 @@
+<h4 class="py-3 mb-4"><span class="text-muted fw-light">Menu /</span> Area Estratégica</h4>
+
+<div id="tablaRegistro"></div>
+
+<div class="modal fade" id="modalFormularioPersona" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content" id="contenidoModalForm"></div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    cargarTabla();
+
+  });
+
+  function cargarTabla() {
+    $.ajax({
+      type: 'POST',
+      url: "/area/tablaRegistros",  // Ruta del metodo del controlador en Spring Boot
+      success: function (response) {
+        $("#tablaRegistro").html(response);  // Actualiza el contenido del div con la respuesta del servidor
+      }
+    });
+  }
+
+  function cargarFormulario() {
+    cargarFormularioAlert("/area/formulario", "#contenidoModalForm", "#formularioArea");
+  }
+
+  function cargarFormularioEdit(id) {
+    cargarFormularioEditAlert(id, "/area/formularioEdit", "#contenidoModalForm", "#formularioArea");
+  }
+
+  function eliminar(nombre, id) {
+    eliminarRegistroAlert(nombre, id, "/area/eliminar", cargarTabla);
+  }
+</script>
+</body>

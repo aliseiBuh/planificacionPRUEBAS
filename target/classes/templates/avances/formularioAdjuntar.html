@@ -1,0 +1,249 @@
+<div class="modal-header">
+  <h4 class="modal-title">Archivos Adjuntos</h4>
+  <a type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></a>
+</div>
+<div class="modal-body">
+  <!-- <div class="row">
+    <div class="card">
+      <h5 class="card-header">Adjuntar Documento</h5>
+      <div class="card-body">
+        <form th:action="@{'/avance/GuardarAdjunto'}" id="formularioEnviarAdjunto"
+          class="dropzone needsclick dropzone-multiple" method="post" enctype="multipart/form-data">
+          <input type="hidden" name="idAvance" th:value="${avance.idAvance}">
+          <div class="dz-message needsclick">
+            Suelte los archivos aquí o haga clic para cargarlos
+            <span class="note needsclick">(Esta es solo una zona de lanzamiento de para introducirlos archivos, <span
+                class="fw-medium"></span> previsualiza los archivos seleccionados para enviar)</span>
+          </div>
+          <div class="fallback">
+            <input name="file" type="file" />
+          </div>
+        </form>
+      </div>
+      <div class="card-footer">
+        <button class="btn btn-primary" id="enviarForm" onclick="enviarFormulario(event)">Enviar</button>
+      </div>
+    </div>
+  </div> -->
+  <div class="row">
+    <div class="col-md-12">
+      <h6 class="text-muted">Lista de Archivos</h6>
+      <div class="nav-align-left nav-tabs-shadow">
+        <ul class="nav nav-tabs col-md-3" role="tablist">
+          <li class="nav-item" th:each="archivo, cont : ${archivos}">
+            <button type="button" th:class="${cont.count == 1 ? 'nav-link active' : 'nav-link'}" role="tab"
+                    data-bs-toggle="tab" th:data-bs-target="${'#navs-' + archivo.idArchivoAdjunto}"
+                    th:aria-controls="${'navs-' + archivo.idArchivoAdjunto}" 
+                    aria-selected="${cont.count == 1 ? 'true' : 'false'}"
+                    th:text="${archivo.nombreArchivo}">
+            </button>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div th:each="archivo, cont : ${archivos}" th:class="${cont.count == 1 ? 'tab-pane fade show active' : 'tab-pane fade'}"
+               th:id="${'navs-' + archivo.idArchivoAdjunto}">
+            <div class="col-12  mb-1 d-flex justify-content-lg-between">
+              <h5 class="card-title" th:text="${archivo.nombreArchivo}"></h5>
+              <div>
+                <button class="btn btn-danger" th:onclick="eliminarArchivo([[${archivo.idArchivoAdjunto}]], [[${archivo.avance.idAvance}]])"
+                th:if="${#lists.contains(session.roles.![nombre], 'RESPONSABLE') && evaluacion == null}">
+                  <i class="fa fa-trash"></i> Eliminar
+                </button>
+                <button class="btn btn-success" th:onclick="descargarDocumento([[${archivo.idArchivoAdjunto}]], [[${archivo.tipoArchivo}]], [[${archivo.nombreArchivo}]])">
+                  <i class="fa fa-download"></i> Descargar
+                </button>
+              </div>
+            </div>
+            <embed th:src="@{'/uploads/' + ${archivo.rutaArchivo}}" th:type="${archivo.tipoArchivo}" frameborder="0"
+                   style="height: 600px; width: 100%;"></embed>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  function descargarDocumento(idDocumento, tipo, nombre) {
+    fetch(`/archivoAjunto/optener/${idDocumento}`, {
+      method: 'GET',
+      headers: {
+        'Accept': tipo
+      }
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Error en la descarga del archivo');
+        }
+        return response.blob(); // Obtiene el archivo como un Blob
+      })
+      .then(blob => {
+        // Crear un enlace para la descarga del archivo
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = nombre; // Nombre del archivo a descargar
+        document.body.appendChild(a);
+        a.click(); // Simula el clic para iniciar la descarga
+        a.remove(); // Limpia el enlace después de la descarga
+        window.URL.revokeObjectURL(url); // Libera el objeto URL creado
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  }
+
+  function eliminarArchivo(id, avance) {
+    // Verifica si la sesión está activa antes de intentar eliminar
+    $.ajax({
+      url: "/cargar-datos",  // URL para verificar la sesión
+      method: "GET",
+      success: function () {
+        // Si la sesión es válida, procede con la eliminación
+        Swal.fire({
+          title: 'Eliminar Registro',
+          text: '¿Estás seguro de eliminar esta archivo?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, eliminar',
+          cancelButtonText: 'Cancelar',
+          reverseButtons: true
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Si el usuario confirma, realizar la llamada AJAX para eliminar
+            $.ajax({
+              url: "/archivoAjunto/eliminar/" + id,  // URL para eliminar el registro con el ID
+              type: 'POST',
+              success: function (response) {
+                cargarFormularioArchivo(avance)
+                Swal.fire(
+                  'Eliminado!',
+                  response,
+                  'success'
+                );
+              },
+              error: function (xhr, status, error) {
+                Swal.fire(
+                  'Error',
+                  'Hubo un problema al eliminar el registro. Por favor, inténtalo de nuevo.',
+                  'error'
+                );
+              }
+            });
+          }
+        });
+      },
+      error: function (xhr) {
+        if (xhr.status === 401) {
+          // Si la sesión ha expirado, muestra una alerta con SweetAlert2
+          Swal.fire({
+            title: 'Sesión expirada',
+            text: 'Tu sesión ha expirado. Por favor, inicia sesión nuevamente.',
+            icon: 'warning',
+            confirmButtonText: 'Ir al login'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.href = '/form-login';  // Redirige a la página de login
+            }
+          });
+        }
+      }
+    });
+  }
+</script>
+<!-- <script>
+  const previewTemplate = `
+  <div class="dz-preview dz-file-preview">
+    <div class="dz-details">
+      <div class="dz-thumbnail">
+        <img data-dz-thumbnail class="img-fluid" alt="Vista previa">
+        <span class="dz-nopreview">Sin vista previa</span>
+        <div class="dz-success-mark"></div>
+        <div class="dz-error-mark"></div>
+        <div class="dz-error-message">
+          <span data-dz-errormessage></span>
+        </div>
+        <div class="progress">
+          <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" data-dz-uploadprogress></div>
+        </div>
+      </div>
+      <div class="dz-filename text-truncate" data-dz-name></div>
+      <div class="dz-size" data-dz-size></div>
+    </div>
+  </div>
+`;
+
+  const dropzoneMulti = document.querySelector('.dropzone-multiple');
+  if (dropzoneMulti) {
+    const myDropzoneMulti = new Dropzone(dropzoneMulti, {
+      previewTemplate: previewTemplate,
+      parallelUploads: 1,
+      maxFilesize: 10,  // Tamaño máximo por archivo en MB
+      addRemoveLinks: true,
+      url: $('#formularioEnviarAdjunto').attr('action'),  // La URL de destino del formulario
+      autoProcessQueue: false,  // No procesar automáticamente los archivos
+      dictDefaultMessage: 'Suelte los archivos aquí o haga clic para cargarlos'
+    });
+
+    // Función para enviar el formulario
+    function enviarFormulario(event) {
+      event.preventDefault();  // Prevenir el envío del formulario por defecto
+
+      // Validación opcional para asegurarse de que haya archivos
+      if (myDropzoneMulti.files.length === 0) {
+        Swal.fire('Error', 'Por favor, agregue archivos antes de enviar.', 'error');
+        return;
+      }
+
+      // Comienza el proceso de subida
+      myDropzoneMulti.processQueue();
+
+      myDropzoneMulti.on("queuecomplete", function () {
+        // Si se suben todos los archivos, entonces se hace la petición AJAX al servidor
+        var form = $('#formularioEnviarAdjunto')[0];
+        var formData = new FormData(form);
+
+        $.ajax({
+          type: 'POST',
+          url: $('#formularioEnviarAdjunto').attr('action'),
+          data: formData,
+          contentType: false,  // No establecer el tipo de contenido aquí
+          processData: false,  // No procesar los datos
+          success: function (response) {
+            if (response === 'Se realizó el registro correctamente') {
+              //$('.modal').modal('hide');
+              Swal.fire(
+                'Registrado!',
+                response + '.',
+                'success'
+              );
+            } else {
+              Swal.fire(
+                'Imposible Registrar!',
+                response,
+                'error'
+              );
+            }
+
+          },
+          error: function (xhr, status, error) {
+            Swal.fire(
+              'Imposible Registrar!',
+              'Ha ocurrido un error. Por favor, intenta nuevamente.' + xhr, status, error,
+              'error'
+            );
+            console.error(error);
+            // Manejo de errores
+          }
+        });
+
+        //Swal.fire('Exito', 'Archivos enviados correctamente.', 'success');
+        // Puedes redirigir o hacer alguna otra acción si es necesario
+      });
+
+      myDropzoneMulti.on("error", function (file, errorMessage) {
+        Swal.fire('Error', 'Ocurrió un error al enviar los archivos: ' + errorMessage, 'error');
+      });
+    }
+  }
+
+</script> -->

@@ -1,0 +1,296 @@
+<div res>
+    <h4 class="py-3 mb-4"><span class="text-muted fw-light">Menú /</span> Areas Estrtaegicas</h4>
+    <div class="row">
+        <div class="col-md-12 col-12 mb-4">
+            <div class="card p-3">
+                <div class="row">
+                    <div class="col-12">
+                        <label class="form-label">Seleccione el área estratégica</label>
+                        <select class="form-select" onchange="initBarChart(this.value)">
+                            <option value="" disabled selected>-- Seleccione área --</option>
+                            <option th:each="area : ${listaAreas}" th:value="${area.idArea}" th:text="${area.nombre}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- cuadro de grafica de areas esraegicas -->
+    <div class="row">
+        <div class="col-md-8 col-12 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Grafica de barras de Politicas</h5>
+                    <div class="dropdown">
+                        <button class="btn p-0" type="button" id="heatChartDd" data-bs-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                            <i class="ti ti-dots-vertical"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="heatChartDd">
+                            <a class="dropdown-item" href="javascript:void(0);">Last 28 Days</a>
+                            <a class="dropdown-item" href="javascript:void(0);">Last Month</a>
+                            <a class="dropdown-item" href="javascript:void(0);">Last Year</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- div de graficas de barras -->
+                <div class="card-body">
+                    <!-- crea lienzo de grafica -->
+                    <canvas id="barra"></canvas>
+                </div>
+            </div>
+        </div>
+        <!-- cuadro de poliicas de area -->
+        <div class="col-md-4 col-12 mb-4">
+            <div class="card p-3">
+                <h5 class="card-title mb-0">Políticas</h5>
+                <!-- div de 'cuadro de poliicas' -->
+                <div id="div-lista"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 col-12 mb-4">
+            <div class="card p-3">
+                <div class="row">
+                    <div class="col-12">
+                        <label class="form-label">Seleccione la politica de desarrollo</label>
+                        <select id="select-politicas" class="form-select" onchange="initPieChart(this.value)">
+                            <option value="" disabled selected>-- Seleccione una politica --</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-12 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Porcentaje de avance de los indicadores</h5>
+                    <div class="dropdown">
+                        <button class="btn p-0" type="button" id="heatChartDd" data-bs-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                            <i class="ti ti-dots-vertical"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="heatChartDd">
+                            <a class="dropdown-item" href="javascript:void(0);">Last 28 Days</a>
+                            <a class="dropdown-item" href="javascript:void(0);">Last Month</a>
+                            <a class="dropdown-item" href="javascript:void(0);">Last Year</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="torta"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-12 mb-4">
+            <div class="card p-3">
+                <h5 class="card-title mb-0">Objetivos</h5>
+                <div id="div-objetivo"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let grafico;
+        let torta;
+
+        function cargarDatosIniciales() {
+            console.log('Carga de inicio');
+            //Consultar lo datos
+            $.ajax({
+                type: 'POST',
+                url: "/avance/tablaRegistros",  // Ruta del metodo del controlador en Spring Boot
+                success: function (response) {
+                    $("#tablaRegistro").html(response);  // Actualiza el contenido del div con la respuesta del servidor
+                }
+            });
+        }
+
+        // INICIO FUNCIONES PARA INICIALIZAR GRÁFICOS
+        function initBarChart(id) {
+            console.log("Opción seleccionada, ID:", id);
+            $.ajax({
+                type: 'POST',
+                url: "/grafica/obtenerObjetivos/" + id,  // Ruta del metodo del controlador en Spring Boot
+                success: function (response) {
+                    console.log(response);
+                    // etiqueta de barras P1, P...+n
+                    const nombres = response.map(politica => 'P' + politica.codigo);
+                    const ponderaciones = response.map(politica => politica.ponderacion);
+                    // etiqueta de numero de politica en 'cuadro de poliicas' P1, P...+n
+                    const politicas = response.map(politica => 'P' + politica.codigo + ': ' + politica.descripcion);
+
+
+                    // Generar colores dinámicamente
+                    const backgroundColor = generateColors(ponderaciones.length);
+                    const borderColor = generateBorderColors(ponderaciones.length);
+
+                    const selectElement = document.getElementById("select-politicas");
+                    // Limpiamos las opciones existentes
+                    selectElement.innerHTML = "";
+
+                    if (response.length) {
+                        const op1 = document.createElement("option");
+                        op1.value = ""; // Asignamos el valor
+                        op1.textContent = "-- Seleccione una politica --"; // Asignamos el texto
+                        op1.disabled = true;
+                        selectElement.appendChild(op1);
+                    } else {
+                        const op1 = document.createElement("option");
+                        op1.value = ""; // Asignamos el valor
+                        op1.textContent = "-- El area estrategica no tiene politicas --"; // Asignamos el texto
+                        op1.disabled = true;
+                        selectElement.appendChild(op1);
+                    }
+
+                    response.forEach(politica => {
+                        const nuevaOpcion = document.createElement("option");
+                        nuevaOpcion.value = politica.idPolitica; // Asignamos el valor
+                        nuevaOpcion.textContent = politica.descripcion; // Asignamos el texto
+                        selectElement.appendChild(nuevaOpcion); // Agregamos la opción al select
+                    });
+
+                    //Datos del grafico
+                    const data = {
+                        labels: nombres,
+                        datasets: [{
+                            label: 'Grado de avancee',
+                            data: ponderaciones,
+                            backgroundColor: backgroundColor,
+                            borderColor: borderColor,
+                            borderWidth: 1,
+                                  bevelWidth: 3,
+                                        bevelHighlightColor: 'rgba(255, 255, 255, 0.75)',
+                                              bevelHighlightColor: 'rgba(255, 255, 255, 0.75)'
+
+                        }]
+                        
+
+                    };
+
+                    //Inicializacion del grafico
+                    const ctx = document.getElementById('barra').getContext('2d');
+                    // desruye grafico cargado si existe
+                    if (grafico) {
+                        grafico.destroy();
+                    }
+
+                    grafico = new Chart(ctx, {
+                        type: 'bar',
+                        data: data,
+                        display: true,
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+
+
+                            }
+                        }
+                    });
+
+                    agregarLista(politicas, 'div-lista');
+                }
+            });
+        }
+
+        function initPieChart(id) {
+            console.info('Politica cambiada: ' + id)
+
+            $.ajax({
+                type: 'POST',
+                url: "/grafica/obtenerObjetivosEstrategicos/" + id,  // Ruta del metodo del controlador en Spring Boot
+                success: function (response) {
+                    console.log(response);
+                    const nombres = response.map(objetivo => 'OBJ' + objetivo.codigo);
+                    const ponderaciones = response.map(objetivo => 'OBJ' + objetivo.codigo + ': ' + objetivo.denominacion);
+                    const datos = response.map(objetivo => objetivo.ponderacion);
+                    const backgroundColor = generateColors(datos.length)
+                    const data1 = {
+                        labels: nombres,
+                        datasets: [{
+                            label: 'Grado de avance',
+                            data: datos,
+                            // asignando arreglo de colores aleatorios de barras
+                            backgroundColor: backgroundColor,
+                            hoverOffset: 4
+                        }]
+                    };
+
+                    const ctx = document.getElementById('torta').getContext('2d');
+
+                    if (torta) {
+                        torta.destroy();
+                    }
+
+                    torta = new Chart(ctx, {
+                        type: 'pie',
+                        data: data1,
+                    });
+                    agregarLista(ponderaciones, 'div-objetivo');
+                }
+            });
+        }
+
+        // Detectar cuando la pestaña se vuelve visible
+        document.addEventListener('visibilitychange', function () {
+            if (document.visibilityState === 'visible') {
+                initBarChart();
+                initPieChart();
+            }
+        });
+
+        // Función para generar colores aleatorios
+        function generateColors(length) {
+            const colors = [];
+            for (let i = 0; i < length; i++) {
+                const randomR = Math.floor(Math.random() * 256);
+                const randomG = Math.floor(Math.random() * 256);
+                const randomB = Math.floor(Math.random() * 256);
+                colors.push(`rgba(${randomR}, ${randomG}, ${randomB}, 0.2)`); // Background
+            }
+            return colors;
+        }
+
+        function generateBorderColors(length) {
+            const colors = [];
+            for (let i = 0; i < length; i++) {
+                const randomR = Math.floor(Math.random() * 256);
+                const randomG = Math.floor(Math.random() * 256);
+                const randomB = Math.floor(Math.random() * 256);
+                colors.push(`rgb(${randomR}, ${randomG}, ${randomB})`); // Border
+            }
+            return colors;
+        }
+        // Agregar lista al cuadro politicas 
+        function agregarLista(items, id) {
+
+            // Obtener el div por su ID
+            const div = document.getElementById(id);
+            div.innerHTML = '';
+            // Crear la lista (ul)
+            const ul = document.createElement('ul');
+
+            // Agregar los elementos a la lista
+            items.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item; // Asignar texto al elemento <li>
+                ul.appendChild(li);   // Agregar el <li> al <ul>
+            });
+
+            // Agregar la lista al div
+            div.appendChild(ul);
+        }
+
+        // Inicializar los gráficos la primera vez que se carga la página
+        initBarChart();
+        //initPieChart();
+        cargarDatosIniciales();
+    </script>
+</div>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documento para Imprimir</title>
+    <style>
+        @page {
+            size: letter landscape;
+            margin-left: 1cm;
+            margin-top: 1cm;
+            margin-right: 1cm;
+            margin-bottom: 1cm;
+        }
+
+        .carta-horizontal {
+            width: 11in;  /* Ancho de una hoja tamaño carta horizontal (11 pulgadas) */
+            height: 8.5in; /* Alto de una hoja tamaño carta horizontal (8.5 pulgadas) */
+            margin: 0;
+            border: 1px solid #000;
+            box-sizing: border-box;
+        }
+
+        .print-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .print-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Estilos tabla */
+        .custom-table {
+            border-spacing: 0; /* Evita que los bordes se superpongan */
+        }
+        .custom-table th, .custom-table td {
+            border: 1px solid black; /* Borde interno de cada celda */
+            margin: 0;
+            padding: 0;
+        }
+        .custom-inner-table {
+            border-spacing: 0; /* Asegura que no haya separación entre celdas */
+        }
+        /* Eliminar padding en la celda que contiene la tabla anidada */
+        .custom-table td > table {
+            margin: -1px; /* Ajuste para que no haya espacio entre la tabla anidada y la celda */
+        }
+
+        .encabezado {
+            font-size: 8px;
+            padding-top: 2px;
+            padding-bottom: 2px;
+        }
+
+        .text-cuerpo {
+            font-size: 8px;
+            margin: 2px;
+        }
+        .vertical{
+            writing-mode: vertical-lr;
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body>
+<div class="carta-horizontal">
+    <table class="custom-table">
+        <thead>
+        <tr>
+            <th rowspan="2" class="encabezado vertical" style="width: 0.2in;">AREA ESTRATEGICA</th>
+            <th rowspan="2" class="encabezado vertical" style="width: 0.3in">POND.</th>
+            <th colspan="3" class="encabezado" style="width: 1.5in">POLITICA DE DESARROLLO</th>
+            <th colspan="3" class="encabezado" style="width: 1.5in">OBJETIVO ESTRATEGICO</th>
+            <th colspan="5" class="encabezado" style="width: 2in">INDICADOR ESTRATEGICO</th>
+            <th colspan="2" class="encabezado" style="width: 1.5in">RESULTADO O PRODUCTO ESPERADO AL 2025</th>
+            <th rowspan="2" class="encabezado vertical" style="width: 0.3in">Linea Base</th>
+            <th colspan="5" class="encabezado" style="width: 2in">PROGRAMACIÓN ANUAL DE METAS</th>
+            <th rowspan="2" class="encabezado vertical" style="width: 0.3in">TOTAL</th>
+            <th rowspan="2" class="encabezado" style="width: 1in">RESPONSABLES</th>
+        </tr>
+        <tr>
+            <!-- Sub encabezado de politica de desarrollo -->
+            <th class="encabezado vertical" style="width: 0.2in">Cond. PD</th>
+            <th class="encabezado vertical" style="width: 0.3in">POND.</th>
+            <th class="encabezado" style="width: 1in">Descripcion</th>
+            <!-- ---------------------------------------- -->
+            <!-- Sub encabezado de objetivo estrategico -->
+            <th class="encabezado vertical" style="width: 0.2in">Cond. OE</th>
+            <th class="encabezado vertical" style="width: 0.3in">POND.</th>
+            <th class="encabezado" style="width: 1in">Descripcion</th>
+            <!-- ---------------------------------------- -->
+            <!-- Sub encabezado de indicador estrategico -->
+            <th class="encabezado vertical" style="width: 0.2in">Cond. IE</th>
+            <th class="encabezado vertical" style="width: 0.3in">POND.</th>
+            <th class="encabezado" style="width: 1in">Descripcion</th>
+            <th class="encabezado vertical" style="width: 0.2in">TIPO</th>
+            <th class="encabezado vertical" style="width: 0.3in">CATEGORIA</th>
+            <!-- ---------------------------------------- -->
+            <!-- Sub encabezado de resultado esperado -->
+            <th class="encabezado vertical" style="width: 0.3in">Cond. RE</th>
+            <th class="encabezado" style="width: 1.2in">DENOMINACION</th>
+            <!-- Sub encabezado de programacion de metas-->
+            <th class="encabezado vertical" style="width: 0.4in">2021</th>
+            <th class="encabezado vertical" style="width: 0.4in">2022</th>
+            <th class="encabezado vertical" style="width: 0.4in">2023</th>
+            <th class="encabezado vertical" style="width: 0.4in">2024</th>
+            <th class="encabezado vertical" style="width: 0.4in">2025</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="area, cont: ${listaAreas}" style="width: 10.7in">
+            <td style="text-align: center; width: 0.2in">
+                <span class="text-cuerpo" th:text="${area.codigo}"></span>
+            </td>
+            <td style="text-align: center; width: 0.3in">
+                <span class="text-cuerpo" th:text="${area.ponderacion+' %'}"></span>
+            </td>
+            <td colspan="21" style="width: 10.2in">
+                <table class="custom-inner-table">
+                    <tbody>
+                    <tr th:each="politica, cont: ${area.politicas}">
+                        <td style="text-align: center; width: 0.2in">
+                            <span class="text-cuerpo" th:text="${politica.codigo}"></span>
+                        </td>
+                        <td style="text-align: center; width: 0.3in">
+                            <span class="text-cuerpo" th:text="${politica.ponderacion+' %'}"></span>
+                        </td>
+                        <td style="text-align: justify; width: 1in">
+                            <p class="text-cuerpo" th:text="${politica.descripcion}"></p>
+                        </td>
+                        <td colspan="18" style="width: 8.9in">
+                            <table class="custom-inner-table">
+                                <tbody>
+                                <tr th:each="objetivo, cont: ${politica.objetivos}">
+                                    <td style="text-align: center; width: 0.2in">
+                                        <span class="text-cuerpo" th:text="${objetivo.codigo}"></span>
+                                    </td>
+                                    <td style="text-align: center; width: 0.3in">
+                                        <span class="text-cuerpo" th:text="${objetivo.ponderacion+' %'}"></span>
+                                    </td>
+                                    <td style="text-align: justify; width: 1in">
+                                        <p class="text-cuerpo" th:text="${objetivo.descripcion}"></p>
+                                    </td>
+                                    <td colspan="15" style="width: 7.4in">
+                                        <table class="custom-inner-table">
+                                            <tbody>
+                                            <tr th:each="indicador, cont: ${objetivo.indicadores}">
+                                                <td style="text-align: center; width: 0.2in">
+                                                    <span class="text-cuerpo" th:text="${indicador.codigo}"></span>
+                                                </td>
+                                                <td style="text-align: center; width: 0.3in">
+                                                    <span class="text-cuerpo" th:text="${indicador.ponderacion+' %'}"></span>
+                                                </td>
+                                                <td style="width: 1in;">
+                                                    <p class="text-cuerpo" th:text="${indicador.denominacion}"></p>
+                                                </td>
+                                                <td style="width: 0.2in; text-align: center">
+                                                    <span class="text-cuerpo vertical" th:text="${indicador.tipoIndicador.nombre}"></span>
+                                                </td>
+                                                <td style="width: 0.3in; text-align: center">
+                                                    <span class="text-cuerpo vertical" th:text="${indicador.categoriaIndicador.nombre}"></span>
+                                                </td>
+                                                <td colspan="10" style="width: 5.4in;">
+                                                    <table class="custom-inner-table">
+                                                        <tbody>
+                                                        <tr th:each="resultado, cont: ${indicador.resultados}">
+                                                            <td style="width: 0.3in; text-align: center;">
+                                                                <span class="text-cuerpo" th:text="${resultado.codigo}"></span>
+                                                            </td>
+                                                            <td style="width: 1.2in;">
+                                                                <p class="text-cuerpo" th:text="${resultado.denominacion}"></p>
+                                                            </td>
+                                                            <td style="width: 0.3in; text-align: center">
+                                                                <p class="text-cuerpo" th:text="${indicador.lineaBase}"></p>
+                                                            </td>
+                                                            <td style="width: 0.4in; text-align: center;" th:each="meta, cont: ${indicador.metas}">
+                                                                <span class="text-cuerpo" th:text="${meta.resultado}"></span>
+                                                            </td>
+                                                            <td style="width: 0.3in; text-align: center;">
+                                                                <span class="text-cuerpo" th:text="20"></span>
+                                                            </td>
+                                                            <td style="width: 1in;">
+                                                                <table class="custom-inner-table">
+                                                                    <tbody>
+                                                                    <tr th:each="responsable, cont: ${indicador.responsables}">
+                                                                        <td style="width: 1in;">
+                                                                            <span class="text-cuerpo" th:text="${responsable.nombre}"></span>
+                                                                        </td>
+                                                                    </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<button class="print-button" onclick="window.print()">Imprimir</button>
+</body>
+</html>

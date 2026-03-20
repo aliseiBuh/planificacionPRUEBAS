@@ -1,0 +1,39 @@
+<h4 class="py-3 mb-4"><span class="text-muted fw-light">Menu /</span> Politica</h4>
+
+<div id="tablaRegistro"></div>
+<div class="modal fade modal-move" id="modalFormularioPersona" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content" id="contenidoModalForm"></div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        console.log('Iniciamos el documento');
+        cargarTabla();
+    });
+
+    function cargarTabla() {
+        console.log('Se llamo la funcion');
+        $.ajax({
+            type: 'POST',
+            url: "/politica/tablaRegistros",  // Ruta del metodo del controlador en Spring Boot
+            success: function (response) {
+                $("#tablaRegistro").html(response);  // Actualiza el contenido del div con la respuesta del servidor
+            }
+        });
+    }
+
+    function cargarFormulario() {
+        cargarFormularioAlert("/politica/formulario", "#contenidoModalForm", "#formularioPolitica");
+    }
+
+    function cargarFormularioEdit(id) {
+        cargarFormularioEditAlert(id, "/politica/formularioEdit", "#contenidoModalForm", "#formularioPolitica");
+    }
+
+    function eliminar(nombre, id) {
+        eliminarRegistroAlert(nombre, id, "/politica/eliminar", cargarTabla);
+    }
+</script>
+</body>

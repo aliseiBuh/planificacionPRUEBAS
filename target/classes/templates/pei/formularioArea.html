@@ -1,0 +1,235 @@
+<div class="modal-header" id="modal-header">
+    <h4 class="modal-title">Areas Estratégica</h4>
+    <a type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></a>
+</div>
+<div class="modal-body">
+    <form id="formularioPei" method="post" th:action="${edit}? @{/area/Modificar} : @{/area/Registrar}" novalidate>
+        <input type="hidden" th:value="${pei.idPei}" id="idPei" name="pei">
+        <input type="hidden" th:if="${edit != null}" th:field="${area.idArea}">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Formulario</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <label class="form-label" for="modalEditUserFirstName">Codigo</label>
+                        <input type="text" class="form-control fecha" placeholder="Introduzca un codigo" name="fechaFin"
+                            th:field="${area.codigo}" required />
+                        <div class="valid-feedback">Correcto!</div>
+                        <div class="invalid-feedback">Porfavor Introduzca el codigo del Área Estratégica</div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label" for="modalEditUserLastName">Ponderacion</label>
+                        <input type="number" class="form-control fecha" placeholder="Introduzca la ponderación"
+                            name="fechaFin" th:field="${area.ponderacion}" required />
+                        <div class="valid-feedback">Correcto!</div>
+                        <div class="invalid-feedback">Porfavor Introduzca la ponderación</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-md-12">
+                        <label class="form-label" for="modalEditUserLastName">Area Estratégica</label>
+                        <input type="text" class="form-control fecha" placeholder="Introduzca el área estratégica"
+                            name="fechaFin" th:field="${area.nombre}" required />
+                        <div class="valid-feedback">Correcto!</div>
+                        <div class="invalid-feedback">Porfavor Introduzca un Área Estratégica</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-12">
+                        <input type="submit" class="btn btn-success"
+                            th:value="${edit}? 'Guardar Cambios': 'Agregar Registro'">
+                        <a type="submit" class="btn btn-secondary" style="color: white;"
+                            th:onclick="cargarFormularioArea([[${pei.idPei}]])">Cancelar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title">Registros</h5>
+        </div>
+        <div class="card-body">
+            <div class="card-datatable table-responsive pt-0">
+                <table class="datatables-basic table table-hover" id="data-tableArea">
+                    <thead>
+                        <tr>
+                            <th>Codigo</th>
+                            <th>Ponderación</th>
+                            <th>Área Estratégica</th>
+                            <th>Opciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="animate__animated animate__fast">
+                        <tr th:each="area, cont: ${areas}" th:if="${area.estado != 'ELIMINADO'}">
+                            <th th:text="${area.codigo}"></th>
+                            <th th:text="${area.ponderacion}+' %'"></th>
+                            <th>
+                                <b th:text="'AE '+${area.codigo}+': '"></b>
+                                "<span th:text="${area.nombre}"></span>"
+                            </th>
+                            <th>
+                                <button type="button" class="btn btn-sm btn-primary edit-btn"
+                                    th:onclick="cargarFormularioAreaEdit([[${pei.idPei}]], [[${area.idArea}]])">
+                                    <i class="fa-solid fa-pen-to-square"></i> Editar
+                                </button>
+                                <button type="button" class="btn btn-sm btn-danger"
+                                    th:onclick="eliminarArea([[${area.idArea}]])">
+                                    <i class="fa-solid fa-trash"></i> Eliminar
+                                </button>
+                            </th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var table = $('#data-tableArea').DataTable({
+            language: {
+                "sProcessing": "Procesando...",
+                "sLengthMenu": "Mostrar _MENU_ registros",
+                "sZeroRecords": "No se encontraron resultados",
+                "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                "sSearch": "Buscar:",
+                "sLoadingRecords": "Cargando...",
+                "oPaginate": {
+                    "sFirst": "Primero",
+                    "sLast": "Último",
+                    "sNext": "Siguiente",
+                    "sPrevious": "Anterior"
+                },
+                "oAria": {
+                    "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                    "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                }
+            }
+        });
+
+        // Maneja el clic en el botón "Editar"
+        $('#data-tableArea tbody').on('click', '.edit-btn', function () {
+            // Elimina el resaltado de todas las filas
+            table.$('tr.highlight').removeClass('highlight');
+
+            // Resaltar la fila actual
+            $(this).closest('tr').addClass('highlight');
+        });
+
+       // manejarEnvioFormulario('#formularioPei');
+        $('#formularioPei').submit(function (event) {
+            event.preventDefault();
+            if (this.checkValidity() === false) {
+                $(this).addClass('was-validated');
+                return;
+            }
+            var form = $(this)[0];
+            var formData = new FormData(form);
+
+            $.ajax({
+                type: 'POST',
+                url: $(this).attr('action'),
+                data: formData,
+                contentType: false,  // No establecer el tipo de contenido aquí
+                processData: false,  // No procesar los datos
+                success: function (response) {
+
+                    if (response === 'Se realizó el registro correctamente') {
+                        cargarFormularioArea($('#idPei').val());
+                        Swal.fire(
+                            'Registrado!',
+                            response + '.',
+                            'success'
+                        );
+                    } else {
+                        Swal.fire(
+                            'Imposible Registrar!',
+                            response + '.',
+                            'error'
+                        );
+                    }
+
+                },
+                error: function (xhr, status, error) {
+                    Swal.fire(
+                        'Imposible Registrar!',
+                        'Ha ocurrido un error. Por favor, intenta nuevamente.' + xhr, status, error,
+                        'error'
+                    );
+                    console.error(error);
+                    // Manejo de errores
+                }
+            });
+        });
+
+        const modal = document.getElementById("modalFormularioPersona");
+        const header = document.getElementById("modal-header");
+
+        let isDragging = false;
+        let offset = { x: 0, y: 0 };
+
+        header.addEventListener("mousedown", (e) => {
+            isDragging = true;
+            offset.x = e.clientX - modal.getBoundingClientRect().left;
+            offset.y = e.clientY - modal.getBoundingClientRect().top;
+        });
+
+        document.addEventListener("mousemove", (e) => {
+            if (isDragging) {
+                modal.style.left = `${e.clientX - offset.x}px`;
+                modal.style.top = `${e.clientY - offset.y}px`;
+            }
+        });
+
+        document.addEventListener("mouseup", () => {
+            isDragging = false;
+        });
+
+    });
+
+    function eliminarArea(area) {
+        Swal.fire({
+            title: 'Eliminar Registro',
+            text: '¿Estas seguro de eliminar este registro?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Si el usuario confirma, realizar la llamada AJAX
+                $.ajax({
+                    url: '/area/eliminar/' + area, // Cambia esto por la URL de tu script PHP
+                    type: 'POST',
+                    success: function (response) {
+                        cargarFormularioArea($('#idPei').val());
+                        Swal.fire(
+                            'Eliminado!',
+                            response,
+                            'success'
+                        );
+                        // Puedes agregar aquí código para actualizar la interfaz de usuario
+                    },
+                    error: function (xhr, status, error) {
+                        Swal.fire(
+                            'Error',
+                            'Hubo un problema al eliminar el registro. Por favor, inténtalo de nuevo.',
+                            'error'
+                        );
+                    }
+                });
+            }
+        });
+
+        
+    }
+</script>

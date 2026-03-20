@@ -1,0 +1,73 @@
+<div class="card ">
+    <div class="card-header d-flex justify-content-lg-between">
+      <h5>Registros de Asignacion de Techos Presupuestarios</h5>
+      <button type="button" class="btn btn-primary" onclick="cargarFormulario()" data-bs-toggle="modal"
+        data-bs-target="#modalFormularioFormulario">
+        <i class="fa-solid fa-money-bill-trend-up"></i>  Asignar
+      </button>
+    </div>
+    <div class="card-datatable table-responsive pt-0">
+      <table class="datatables-basic table table-hover" id="data-table">
+        <thead >
+          <tr>
+            <th>#</th>
+            <th>Unidad Funcional</th>
+            <th>Monto Asignado</th>
+            <th>Monto Ejecutado</th>
+            <th>Año</th>
+            <th>Fecha de Registro</th>
+            <th>Opciones</th>
+          </tr>
+        </thead>
+        <tbody class="animate__animated animate__bounceInDown">
+          <tr th:each="presupuestario, cont: ${techosPresupuestarios}">
+            <th th:text="${cont.count}"></th>
+            <th th:text="${presupuestario.unidadFuncional.nombre}+' '+${presupuestario.unidadFuncional.sigla}"></th>
+            <th th:text="${presupuestario.montoAsignado}"></th>
+            <th th:text="${presupuestario.montoEjecutado}"></th>
+            <th th:text="${presupuestario.gestion}"></th>
+            <th th:text="${#dates.format(presupuestario.registro, 'dd/MM/yyyy HH:mm:ss')}"></th>
+            <th>
+              <button type="button" class="btn btn-sm btn-primary"
+                th:onclick="cargarFormularioEdit([[${presupuestario.idTechoPresupuesto}]])" data-bs-toggle="modal"
+                data-bs-target="#modalFormularioFormulario">
+                <i class="fa-solid fa-pen-to-square"></i> Editar
+              </button>
+              <button type="button" class="btn btn-sm btn-danger" th:onclick="eliminar([[${presupuestario.idTechoPresupuesto}]])">
+                <i class="fa-solid fa-trash"></i> Eliminar
+              </button>
+            </th>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  
+  <script>
+    $('#data-table').DataTable({
+      language: {
+        "sProcessing": "Procesando...",
+        "sLengthMenu": "Mostrar _MENU_ registros",
+        "sZeroRecords": "No se encontraron resultados",
+        "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+        "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+        "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+        "sInfoPostFix": "",
+        "sSearch": "Buscar:",
+        "sUrl": "",
+        "sInfoThousands": ",",
+        "sLoadingRecords": "Cargando...",
+        "oPaginate": {
+          "sFirst": "Primero",
+          "sLast": "Último",
+          "sNext": "Siguiente",
+          "sPrevious": "Anterior"
+        },
+        "oAria": {
+          "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+          "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+        }
+      }
+    });
+  </script>

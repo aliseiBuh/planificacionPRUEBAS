@@ -1,0 +1,110 @@
+<div class="modal-header" id="modal-header">
+  <h4 class="modal-title" th:text="${edit}? 'Modificar Pei' : 'Registrar Pei'"></h4>
+  <a type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></a>
+</div>
+<form id="formularioPei" method="post" th:action="${edit}? @{/pei/Modificar} : @{/pei/Registrar}" novalidate>
+  <input type="hidden" th:if="${edit != null}" th:field="${pei.idPei}">
+  <div class="modal-body">
+    <div class="row">
+      <!-- <div class="col-12 col-md-6">
+        <label class="form-label" for="modalEditUserFirstName">Fecha Inicio</label>
+        <input type="text" class="form-control fecha" placeholder="DD/MM/YYYY" name="fechaInicio" th:value="${#dates.format(pei.fechaInicio, 'dd/MM/yyyy')}"
+          required />
+        <div class="valid-feedback">Pei!</div>
+        <div class="invalid-feedback">Porfavor Introduzca una fecha de inicio del pei</div>
+      </div>
+      <div class="col-12 col-md-6">
+        <label class="form-label" for="modalEditUserLastName">Fecha Fin</label>
+        <input type="text" class="form-control fecha" placeholder="DD/MM/YYYY" name="fechaFin" th:value="${#dates.format(pei.fechaFin, 'dd/MM/yyyy')}"
+          required />
+        <div class="valid-feedback">Correcto!</div>
+        <div class="invalid-feedback">Porfavor Introduzca una fecha final del pei</div>
+      </div> -->
+      <div class="col-12 col-md-6">
+        <label class="form-label" for="modalEditUserFirstName">Gestion Inicio</label>
+        <input type="text" class="form-control" placeholder="2000"th:field="${pei.gestionInicio}"
+          required />
+        <div class="valid-feedback">Correcto!</div>
+        <div class="invalid-feedback">Porfavor Introduzca una año de inicio del pei</div>
+      </div>
+      <div class="col-12 col-md-6">
+        <label class="form-label" for="modalEditUserLastName">Gestion Fin</label>
+        <input type="text" class="form-control" placeholder="2000" th:field="${pei.gestionFin}"
+          required />
+        <div class="valid-feedback">Correcto!</div>
+        <div class="invalid-feedback">Porfavor Introduzca una año final del pei</div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 col-md-6">
+        <label class="form-label" for="modalEditUserFirstName">Mision</label>
+        <textarea class="form-control" th:field="${pei.mision}" placeholder="Introduzca Mision"  required></textarea>
+        <div class="valid-feedback">Correcto!</div>
+        <div class="invalid-feedback">Porfavor Introduzca un la mision actual.</div>
+      </div>
+      <div class="col-12 col-md-6">
+        <label class="form-label" for="modalEditUserFirstName">Vision</label>
+        <textarea class="form-control" th:field="${pei.vision}" placeholder="Introduzca Vision" required></textarea>
+        <div class="valid-feedback">Correcto!</div>
+        <div class="invalid-feedback">Porfavor Introduzca un vision actual.</div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="row">
+      <div class="col-12">
+        <input type="submit" class="btn btn-success" th:value="${edit}? 'Guardar Cambios': 'Guardar Registro'">
+        <a type="submit" class="btn btn-secondary" style="color: white;" data-bs-dismiss="modal">Cancelar</a>
+      </div>
+    </div>
+  </div>
+</form>
+
+<script>
+  $(document).ready(function () {
+
+    // var Español = {
+    //   weekdays: {
+    //     shorthand: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
+    //     longhand: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
+    //   },
+    //   months: {
+    //     shorthand: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+    //     longhand: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+    //   }
+    // };
+
+    // flatpickr("input.fecha", {
+    //   dateFormat: "d/m/Y",
+    //   locale: Español
+    // });
+
+
+    manejarEnvioFormulario('#formularioPei');
+
+
+    const modal = document.getElementById("modalFormularioPersona");
+    const header = document.getElementById("modal-header");
+
+    let isDragging = false;
+    let offset = { x: 0, y: 0 };
+
+    header.addEventListener("mousedown", (e) => {
+        isDragging = true;
+        offset.x = e.clientX - modal.getBoundingClientRect().left;
+        offset.y = e.clientY - modal.getBoundingClientRect().top;
+    });
+
+    document.addEventListener("mousemove", (e) => {
+        if (isDragging) {
+            modal.style.left = `${e.clientX - offset.x}px`;
+            modal.style.top = `${e.clientY - offset.y}px`;
+        }
+    });
+
+    document.addEventListener("mouseup", () => {
+        isDragging = false;
+    });
+
+  });
+</script>

@@ -1,0 +1,114 @@
+<div class="card animate__animated animate__fadeIn">
+  <div class="card-header d-flex justify-content-lg-between">
+    <h5>Registros de Reportes de Avances</h5>
+    <button type="button" class="btn btn-primary" onclick="cargarFormulario()" data-bs-toggle="modal"
+      data-bs-target="#modalFormularioPersona" th:if="${#lists.contains(session.roles.![nombre], 'RESPONSABLE') && evaluacion == null}">
+      <i class="fa-solid fa-plus me-2"></i> Subir Avance
+    </button>
+  </div>
+  <div class="card-datatable table-responsive pt-0">
+    <table class="datatables-basic table table-hover" id="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Indicador</th>
+          <th>Resultado Esperado</th>
+          <th>Programado</th>
+          <th>Ejecutado</th>
+          <th>Grado de Avance</th>
+          <th>Fecha Registro</th>
+          <th>Evaluacion Cualitativa</th>
+          <th>Opciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="avance, cont: ${avances}">
+          <th th:text="${cont.count}"></th>
+          <th>
+            <b th:text="'COD IE '+${avance.meta.indicador.codigo}+': '"></b>
+            "<span th:text="${avance.meta.indicador.denominacion}"></span>"
+          </th>
+          <th>
+            <th:block th:each="result: ${avance.meta.indicador.resultados}">
+              <b th:text="'COD RE '+${result.codigo}+': '"></b>
+              "<span th:text="${result.denominacion}"></span>"
+            </th:block>
+          </th>
+          <th>
+            <span th:text="'Gestión '+${avance.meta.gestion}"></span>
+            <span th:text="'Valor '+${avance.meta.resultado}"
+              th:if="${avance.meta.indicador.tipoCalculo.nombre == 'Entero' || avance.meta.indicador.tipoCalculo.nombre == 'Promedio'}"></span>
+            <span th:text="'Valor '+${avance.meta.resultadoDecimal}"
+              th:if="${avance.meta.indicador.tipoCalculo.nombre == 'Porcentaje'}"></span>
+          </th>
+          <th>
+            <span th:text="${avance.ejecutado}"
+              th:if="${avance.meta.indicador.tipoCalculo.nombre == 'Entero' || avance.meta.indicador.tipoCalculo.nombre == 'Promedio'}"></span>
+            <span th:text="${avance.ejecutadoDecimal}"
+              th:if="${avance.meta.indicador.tipoCalculo.nombre == 'Porcentaje'}"></span>
+          </th>
+          <th th:text="${avance.gradoAvance}+' %'">
+          </th>
+          <th th:text="${#dates.format(avance.registro, 'dd/MM/yyyy hh:mm a')}">
+          </th>
+          <th>
+            <p th:text="${avance.evaluacionCualitativa}"></p>
+          </th>
+          <th>
+            <button type="button" class="btn btn-sm btn-primary"
+              th:if="${#lists.contains(session.roles.![nombre], 'RESPONSABLE') && evaluacion == null}"
+              th:onclick="cargarFormularioEdit([[${avance.idAvance}]])" data-bs-toggle="modal"
+              data-bs-target="#modalFormularioPersona">
+              <i class="fa-solid fa-pen-to-square me-2"></i>Editar
+            </button>
+            <button type="button" class="btn btn-sm btn-danger"
+              th:if="${#lists.contains(session.roles.![nombre], 'RESPONSABLE') && evaluacion == null}"
+              th:onclick="eliminar2([[${avance.idAvance}]])">
+              <i class="fa-solid fa-trash me-2"></i>Eliminar
+            </button>
+            <button type="button" class="btn btn-sm btn-primary"
+              th:onclick="cargarFormularioArchivo([[${avance.idAvance}]])" data-bs-toggle="modal"
+              data-bs-target="#modalFormularioArchivo">
+              <i class="fa-solid fa-upload me-2"></i>Adjuntos
+            </button>
+            <!-- <button type="button" class="btn btn-sm btn-primary"
+              th:if="${#lists.contains(session.roles.![nombre], 'EVALUADOR')}"
+              th:onclick="cargarFormularioEvaluacion([[${avance.idAvance}]])" data-bs-toggle="modal"
+              data-bs-target="#modalFormularioPersona">
+              <i class="fa-solid fa-pen-to-square me-2"></i>Evaluar
+            </button> -->
+          </th>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<script>
+  $('#data-table').DataTable({
+    language: {
+      "sProcessing": "Procesando...",
+      "sLengthMenu": "Mostrar _MENU_ registros",
+      "sZeroRecords": "No se encontraron resultados",
+      "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+      "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+      "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+      "sInfoPostFix": "",
+      "sSearch": "Buscar:",
+      "sUrl": "",
+      "sInfoThousands": ",",
+      "sLoadingRecords": "Cargando...",
+      "oPaginate": {
+        "sFirst": "Primero",
+        "sLast": "Último",
+        "sNext": "Siguiente",
+        "sPrevious": "Anterior"
+      },
+      "oAria": {
+        "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+        "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+      }
+    }
+  });
+</script>

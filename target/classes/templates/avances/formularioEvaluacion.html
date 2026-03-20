@@ -1,0 +1,77 @@
+<div class="modal-header">
+    <h4 class="modal-title">Registrar Evaluacion Cualitativa del Avance</h4>
+    <a type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></a>
+</div>
+<form id="formularioAvances" method="post" th:action="@{/avance/GuardarEvaluacion}" enctype="multipart/form-data"
+    novalidate>
+    <div class="modal-body">
+        <input type="hidden" th:field="${avance.idAvance}">
+        <input type="hidden" id="unidad-input" th:value="${avance.unidadFuncional.idUnidadFuncional}">
+        <div class="row">
+            <div class="col-12 col-md-12">
+                <label for="select2Basic" class="form-label">Evaluacion</label>
+                <textarea class="form-control" th:field="${avance.evaluacionCualitativa}"
+                    placeholder="Escriba la Evaluacion Cualitativa" required></textarea>
+                <div class="valid-feedback">Correcto!</div>
+                <div class="invalid-feedback">Debe escribir la evaluación cualitativa.</div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div class="row">
+            <div class="col-12">
+                <input type="submit" class="btn btn-success" th:value="${edit}? 'Guardar Cambios': 'Guardar Registro'">
+                <a type="button" class="btn btn-secondary" style="color: white;" data-bs-dismiss="modal">Cancelar</a>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    $(document).ready(function () {
+        $('#formularioAvances').submit(function (event) {
+            event.preventDefault();
+            if (this.checkValidity() === false) {
+                $(this).addClass('was-validated');
+                return;
+            }
+            var form = $(this)[0];
+            var formData = new FormData(form);
+
+            $.ajax({
+                type: 'POST',
+                url: $(this).attr('action'),
+                data: formData,
+                contentType: false,  // No establecer el tipo de contenido aquí
+                processData: false,  // No procesar los datos
+                success: function (response) {
+                    if (response === 'Se realizó el registro correctamente') {
+                        cargarTabla($('#unidad-input').val());
+                        Swal.fire(
+                            'Registrado!',
+                            response + '.',
+                            'success'
+                        );
+                    } else {
+                        Swal.fire(
+                            'Imposible Registrar!',
+                            response,
+                            'error'
+                        );
+                    }
+
+                },
+                error: function (xhr, status, error) {
+                    Swal.fire(
+                        'Imposible Registrar!',
+                        'Ha ocurrido un error. Por favor, intenta nuevamente.' + xhr, status, error,
+                        'error'
+                    );
+                    console.error(error);
+                    // Manejo de errores
+                }
+            });
+        });
+    });
+
+</script>
